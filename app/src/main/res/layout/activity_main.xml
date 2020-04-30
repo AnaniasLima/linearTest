@@ -20,13 +20,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/btnBillAcceptorOff"
-            android:text="@string/billAcceptorOff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnBillAcceptorQuestion"
@@ -43,6 +36,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/button11"
+            android:text="@string/cmd_11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
 
 
         <Button
@@ -74,24 +76,25 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button11"
-            android:text="@string/cmd_11"
+            android:id="@+id/btnBillAcceptorOff"
+            android:text="@string/billAcceptorOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+
+        <Button
+            android:id="@+id/btnBillAcceptorReset"
+            android:text="@string/billAcceptorReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/button12"
-            android:text="@string/cmd_12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/button13"
-            android:text="@string/cmd_05"
+            android:id="@+id/btnBillAcceptorStopMachine"
+            android:text="@string/stopStateMachine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

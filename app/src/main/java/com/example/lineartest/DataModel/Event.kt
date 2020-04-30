@@ -28,7 +28,7 @@ data class Event(
         var tabletResetPktNumber: Int = 0
         var ledPktNumber: Int = 0
         var nackPktNumber: Int = 0
-        var noteiroOnTimestamp:String = ""
+//        var noteiroOnTimestamp:String = ""
 
 
 
@@ -58,9 +58,9 @@ data class Event(
                     }
                 }
                 EventType.FW_BILL_ACCEPTOR -> {
-                    if ( event.action == ON ) {
-                        noteiroOnTimestamp = BillAcceptor.turnOnTimeStamp
-                    }
+//                    if ( event.action == ON ) {
+//                        noteiroOnTimestamp = BillAcceptor.turnOnTimeStamp
+//                    }
                 }
                 else -> {
                     // do nothing
@@ -80,7 +80,7 @@ data class Event(
 
             commandData.put("packetNumber", pktNumber)
             commandData.put("timestamp", event.requestToSendtimeStamp)
-            commandData.put("noteiroOnTimestamp", noteiroOnTimestamp)
+//            commandData.put("noteiroOnTimestamp", noteiroOnTimestamp)
             commandData.put("hour", SimpleDateFormat( "HH:mm:SS", Locale.getDefault()).format(Date()))
 
             return commandData.toString()
@@ -111,7 +111,7 @@ data class EventResponse(
     var tB: String = "",
     var tG: String = "",
     var timestamp: String = "",
-    var noteiroOnTimestamp: String = "",
+//    var noteiroOnTimestamp: String = "",
     var cordinates: String = "",
     var eventType: EventType = EventType.FW_STATUS_RQ) {
     companion object {

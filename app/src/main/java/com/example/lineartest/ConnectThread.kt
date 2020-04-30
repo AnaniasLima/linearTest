@@ -30,7 +30,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         var CONNECT = 1
         var DISCONNECT = 0
         val WAITTIME : Long = 100L
-        val MICROWAITTIME : Long = 20L
+        val MICROWAITTIME : Long = 130L
         var isConnected: Boolean  = false
     }
 
@@ -96,7 +96,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
     fun onCommandReceived(commandReceived: String) {
 
-        println("RX ==> ${commandReceived}")
+        println("@@@ RX ==> ${commandReceived}")
         try {
             val eventResponse = Gson().fromJson(commandReceived, EventResponse::class.java)
             EventType.getByCommand(eventResponse.cmd)?.let {
@@ -137,7 +137,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                         val event = EVENT_LIST[0]
 //                        Timber.e("Evento: %s-%s (%s)", event.eventType, event.action, event.requestToSendtimeStamp)
                         send(event)
-                        sleep(MICROWAITTIME)
+                        sleep(MICROWAITTIME) // TODO: Ver qual o problema que se diminuir esse tempo o Arduino não responde o segundo comando
                         EVENT_LIST.removeAt(0)
                     }
                 }
@@ -247,7 +247,11 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
     private fun send( curEvent: Event) {
         try {
-            val pktStr: String = Event.getCommandData(curEvent)
+            var pktStr: String = Event.getCommandData(curEvent)
+
+            println("@@@ TX ==> ${pktStr}")
+
+
 
             if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX) == 1 ) {
                 mostraNaTela("TX: $pktStr")
@@ -255,7 +259,9 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                 Timber.d("SEND ==> %s(%s) - %d (errosRX:%d)", curEvent.eventType.command, curEvent.action, Event.pktNumber, EventResponse.invalidJsonPacketsReceived)
             }
 
+            pktStr += "\r\n"
             usbSerialDevice?.write(pktStr.toByteArray())
+
         } catch (e: Exception) {
             Timber.d("Ocorreu uma Exception ")
         }

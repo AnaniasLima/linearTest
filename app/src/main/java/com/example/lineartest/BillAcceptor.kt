@@ -16,7 +16,7 @@ enum class DeviceState  {
     UNKNOW,
     OFF,
     ON,
-    RESET,
+    RESET;
 }
 
 enum class DeviceCommand  {
@@ -26,7 +26,7 @@ enum class DeviceCommand  {
     QUESTION,
     SIMULA5REAIS,
     SIMULA10REAIS,
-    SIMULA50REAIS
+    SIMULA50REAIS;
 }
 
 
@@ -56,7 +56,7 @@ object BillAcceptor {
 
 
 
-    fun fakeBillAccept(value: Int) :  {
+    fun fakeBillAccept(value: Int) {
         when (value) {
             5 -> sendCommandToDevice(DeviceCommand.SIMULA5REAIS)
             10 -> sendCommandToDevice(DeviceCommand.SIMULA10REAIS)
@@ -65,32 +65,40 @@ object BillAcceptor {
         deviceChecking(WAIT_TIME_TO_RESPONSE)
     }
 
-    fun StartStateMachine() :  {
+    fun StartStateMachine()  {
         stateMachineRunning = true
         desiredState = DeviceState.ON
         deviceChecking(WAIT_TIME_TO_RESPONSE)
     }
 
-    fun SendTurnOn() :  {
+    fun StopStateMachine()  {
+        stateMachineRunning = false
+    }
+
+    fun SendTurnOn() {
         sendCommandToDevice(DeviceCommand.ON)
     }
 
-    fun SendTurnOff() :  {
-        sendCommandToDevice(DeviceCommand.ON)
+    fun SendTurnOff() {
+        sendCommandToDevice(DeviceCommand.OFF)
     }
 
-    fun SendQuestion() :  {
+    fun SendQuestion() {
         sendCommandToDevice(DeviceCommand.QUESTION)
     }
 
-    fun turnOn() :  {
+    fun SendReset() {
+        sendCommandToDevice(DeviceCommand.RESET)
+    }
+
+    fun turnOn() {
         desiredState = DeviceState.ON
 //        sendCommandToDevice(DeviceCommand.ON)
 //        sendCommandToDevice(DeviceCommand.QUESTION)
         deviceChecking(WAIT_TIME_TO_RESPONSE)
     }
 
-    fun turnOff() :  {
+    fun turnOff() {
         desiredState = DeviceState.OFF
 //        sendCommandToDevice(DeviceCommand.OFF)
 //        sendCommandToDevice(DeviceCommand.QUESTION)
@@ -151,7 +159,6 @@ object BillAcceptor {
 
 
     fun processReceivedResponse(response : EventResponse) {
-
 
         if ( ! stateMachineRunning ) {
             return
@@ -219,6 +226,9 @@ object BillAcceptor {
                         sendCommandToDevice(DeviceCommand.QUESTION)
                     }
                 }
+                Event.SIMULA5REAIS  -> Timber.i("Not processes : ${response.action}")
+                Event.SIMULA10REAIS -> Timber.i("Not processes : ${response.action}")
+                Event.SIMULA50REAIS -> Timber.i("Not processes : ${response.action}")
                 else -> {
                     Timber.e("Invalid Response from BillAcceptor")
                 }
@@ -242,6 +252,9 @@ object BillAcceptor {
             DeviceCommand.QUESTION -> {
                 ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.QUESTION)
             }
+            DeviceCommand.RESET -> {
+                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.RESET)
+            }
             DeviceCommand.SIMULA5REAIS -> {
                 ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA5REAIS)
             }
@@ -262,22 +275,27 @@ object BillAcceptor {
         Timber.i("CREDITAR ${value}") // TODO: integrar com interface
     }
 
-    private fun resetCredits() : {
-        Timber.e("resetCredits")
+    private fun resetCredits() {
+        Timber.e("resetCredits ${desiredState} == ${DeviceState.RESET}")
         if ( desiredState == DeviceState.RESET ) {
             if ( receivedValue == 0) {
+                Timber.e("setando desiredState para OFF")
                 desiredState = DeviceState.OFF
                 sendCommandToDevice(DeviceCommand.OFF)
+                sendCommandToDevice(DeviceCommand.QUESTION)
             } else {
                 // Só vamos aceitar credito quando recebermos um valor no estado OFF
                 if ( receivedState == DeviceState.OFF) {
                     sendCommandToDevice(DeviceCommand.RESET)
+                    sendCommandToDevice(DeviceCommand.QUESTION)
                 } else {
                     sendCommandToDevice(DeviceCommand.OFF)
+                    sendCommandToDevice(DeviceCommand.QUESTION)
                 }
             }
         } else {
             sendCommandToDevice(DeviceCommand.OFF)
+            sendCommandToDevice(DeviceCommand.QUESTION)
             desiredState = DeviceState.RESET
         }
     }

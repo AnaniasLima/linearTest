@@ -24,7 +24,9 @@
     <string name="billAcceptorOn">Noteiro\nOn</string>
     <string name="billAcceptorOff">Noteiro\nOff</string>
     <string name="billAcceptorQuestion">Noteiro\nQuestion</string>
+    <string name="billAcceptorReset">Noteiro\nReset</string>
     <string name="startStateMachine">Start\nFSM</string>
+    <string name="stopStateMachine">Stop\nFSM</string>
 
 
 

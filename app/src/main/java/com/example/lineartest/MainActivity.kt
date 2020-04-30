@@ -48,8 +48,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnBillAcceptorOn.setOnClickListener(this)
         btnBillAcceptorOff.setOnClickListener(this)
         btnBillAcceptorQuestion.setOnClickListener(this)
+        btnBillAcceptorReset.setOnClickListener(this)
         btnBillAcceptorStartMachine.setOnClickListener(this)
-
+        btnBillAcceptorStopMachine.setOnClickListener(this)
 
         btnEchoSend.setOnClickListener(this)
         btnEchoReceive.setOnClickListener(this)
@@ -99,7 +100,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btnBillAcceptorOn -> BillAcceptor.SendTurnOn()
             btnBillAcceptorOff -> BillAcceptor.SendTurnOff()
             btnBillAcceptorQuestion -> BillAcceptor.SendQuestion()
+            btnBillAcceptorReset -> BillAcceptor.SendReset()
             btnBillAcceptorStartMachine -> BillAcceptor.StartStateMachine()
+            btnBillAcceptorStopMachine -> BillAcceptor.StopStateMachine()
 
             else -> {
                 println("Outro ${btnName}")
