@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -91,7 +92,7 @@ object ArduinoSerialDevice {
                 Timber.e("=============== FW_PLAY =======================: ${eventResponse.toString()}")
             }
             EventType.FW_BILL_ACCEPTOR -> {
-                Timber.e("FW_BILL_ACCEPTOR =====> ${eventResponse.toString()}")
+//                Timber.e("FW_BILL_ACCEPTOR =====> ${eventResponse.toString()}")
                 BillAcceptor.processReceivedResponse(eventResponse)
             }
 
@@ -196,24 +197,14 @@ object ArduinoSerialDevice {
     }
 
 
-    fun setLogLevel(function : FunctionType, value: Int) {
-        when ( function) {
-            FunctionType.FX_RX -> {
-                rxLogLevel = value
-            }
-            FunctionType.FX_TX -> {
-                txLogLevel = value
-            }
-        }
-    }
 
-    fun getLogLevel(function : FunctionType) : Int {
+    fun getLogLevel(function : FunctionType) : Boolean {
         when ( function) {
             FunctionType.FX_RX -> {
-                return(rxLogLevel)
+                return  ( (mainActivity as MainActivity).checkBoxLogRX.isChecked )
             }
             FunctionType.FX_TX -> {
-                return(txLogLevel)
+                return  ( (mainActivity as MainActivity).checkBoxLogTX.isChecked )
             }
         }
     }

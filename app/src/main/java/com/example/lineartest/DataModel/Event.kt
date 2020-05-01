@@ -2,13 +2,15 @@ package com.example.lineartest.DataModel
 
 import com.example.lineartest.BillAcceptor
 import org.json.JSONObject
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
 data class Event(
     var eventType: EventType = EventType.FW_STATUS_RQ,
     var action: String = QUESTION,
-    var requestToSendtimeStamp: String = Date().time.toString()) {
+//    var requestToSendtimeStamp: String = Date().time.toString(),
+    var timestamp: Long = Date().time) {
 
     companion object {
         val ON = "on"
@@ -79,7 +81,7 @@ data class Event(
             }
 
             commandData.put("packetNumber", pktNumber)
-            commandData.put("timestamp", event.requestToSendtimeStamp)
+            commandData.put("timestamp", event.timestamp.toString())
 //            commandData.put("noteiroOnTimestamp", noteiroOnTimestamp)
             commandData.put("hour", SimpleDateFormat( "HH:mm:SS", Locale.getDefault()).format(Date()))
 

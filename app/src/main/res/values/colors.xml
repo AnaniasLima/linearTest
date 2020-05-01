@@ -5,4 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorTextLog">#1B4BDB</color>
     <color name="colorTextHistory">#4665C5</color>
+    <color name="colorTopArea1">#809C1B</color>
+    <color name="colorTopArea2">#809C1B</color>
 </resources>

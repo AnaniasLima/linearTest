@@ -53,8 +53,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnBillAcceptorStartMachine.setOnClickListener(this)
         btnBillAcceptorStopMachine.setOnClickListener(this)
 
-        btnEchoSend.setOnClickListener(this)
-        btnEchoReceive.setOnClickListener(this)
+
+//        btnEchoSend.setOnClickListener(this)
+//        btnEchoReceive.setOnClickListener(this)
         btnLogClear.setOnClickListener(this)
         btnLogTag.setOnClickListener(this)
 
@@ -67,24 +68,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         val btnName = (v as Button).text.toString()
         when (v){
-            btnEchoSend -> {
-                if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX) == 0) {
-                    btnEchoSend.text = getString(R.string.sendOff)
-                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_TX, 1)
-                }  else {
-                    btnEchoSend.text = getString(R.string.sendOn)
-                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_TX, 0)
-                }
-            }
-            btnEchoReceive -> {
-                if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX) == 0) {
-                    btnEchoReceive.text = getString(R.string.receiveOff)
-                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_RX, 1)
-                }  else {
-                    btnEchoReceive.text = getString(R.string.receiveOn)
-                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_RX, 0)
-                }
-            }
+//            btnEchoSend -> {
+//                if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX) == 0) {
+//                    btnEchoSend.text = getString(R.string.sendOff)
+//                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_TX, 1)
+//                }  else {
+//                    btnEchoSend.text = getString(R.string.sendOn)
+//                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_TX, 0)
+//                }
+//            }
+//            btnEchoReceive -> {
+//                if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX) == 0) {
+//                    btnEchoReceive.text = getString(R.string.receiveOff)
+//                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_RX, 1)
+//                }  else {
+//                    btnEchoReceive.text = getString(R.string.receiveOn)
+//                    ArduinoSerialDevice.setLogLevel(FunctionType.FX_RX, 0)
+//                }
+//            }
             btnLogClear -> {
                 stringTextLog = ""
                 textLog.setText(stringTextLog)
@@ -97,6 +98,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btn5reais -> {
                 if ( BillAcceptor.isEnabled() ) {
                     BillAcceptor.fakeBillAccept(5)
+                    mostraEmHistory("Nota 5")
                 } else {
                     Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
                 }
@@ -104,6 +106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btn10reais -> {
                 if ( BillAcceptor.isEnabled() ) {
                     BillAcceptor.fakeBillAccept(10)
+                    mostraEmHistory("Nota 10")
                 } else {
                     Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
                 }
@@ -112,6 +115,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btn50reais -> {
                 if ( BillAcceptor.isEnabled() ) {
                     BillAcceptor.fakeBillAccept(50)
+                    mostraEmHistory("Nota 50")
                 } else {
                     Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
                 }

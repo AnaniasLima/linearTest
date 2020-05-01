@@ -13,9 +13,10 @@ import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.io.IOException
-import java.util.HashMap
+import java.util.*
 
 
 class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActivity: AppCompatActivity, val myContext: Context) : Thread(),
@@ -99,7 +100,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
     fun onCommandReceived(commandReceived: String) {
 
-        if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX) > 0  ) {
+        if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX)   ) {
             mostraNaTela("RX: ${commandReceived}")
         }
 
@@ -139,9 +140,20 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                         sleep(WAITTIME)
                     }  else {
                         val event = EVENT_LIST[0]
+                        var waitTime = 0L
+                        if ( (mainActivity as MainActivity).check100ms.isChecked) waitTime += 100L
+                        if ( (mainActivity as MainActivity).check50ms.isChecked) waitTime += 50L
+                        if ( (mainActivity as MainActivity).check30ms.isChecked) waitTime += 30L
+                        if ( (mainActivity as MainActivity).check10ms.isChecked) waitTime += 10L
+
+                        if ( waitTime == 0L ) {
+                            waitTime = MICROWAITTIME
+                        }
+
+
 //                        Timber.e("Evento: %s-%s (%s)", event.eventType, event.action, event.requestToSendtimeStamp)
                         send(event)
-                        sleep(MICROWAITTIME) // TODO: Ver qual o problema que se diminuir esse tempo o Arduino não responde o segundo comando
+                        sleep(waitTime) // TODO: Ver qual o problema que se diminuir esse tempo o Arduino não responde o segundo comando
                         EVENT_LIST.removeAt(0)
                     }
                 }
@@ -249,13 +261,36 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         return selectedDevice
     }
 
+    private var lastEventType: String = ""
+    private var lastEventAction: String = ""
+    private var lastEventTimestamp: Long = 0L
+
     private fun send( curEvent: Event) {
         try {
+            if ( (curEvent.eventType.toString() == lastEventType) && (curEvent.action == lastEventAction) ) {
+                var dif = curEvent.timestamp - lastEventTimestamp
+                if ( dif < 500 )  {
+                    Timber.i("@@@ DROPANDO eventType=${curEvent.eventType} action=${curEvent.action} timestamp=${curEvent.timestamp}")
+                    return
+                } else {
+                    Timber.i("@@@ eventType=${curEvent.eventType} action=${curEvent.action} dif =${dif}")
+                }
+            }
+
+//            Timber.i("@@@ eventType=${curEvent.eventType} action=${curEvent.action} timestamp=${curEvent.timestamp}")
+//            Timber.i("@@@ eventType=${lastEventType} action=${lastEventAction} timestamp=${lastEventTimestamp}")
+
+
+            lastEventType = curEvent.eventType.toString()
+            lastEventAction = curEvent.action
+            lastEventTimestamp = curEvent.timestamp
+
             var pktStr: String = Event.getCommandData(curEvent)
+
 
 //            println("@@@ TX ==> ${pktStr}")
 
-            if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX) == 1 ) {
+            if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX)  ) {
                 mostraNaTela("TX: $pktStr")
             } else {
                 Timber.d("SEND ==> %s(%s) - %d (errosRX:%d)", curEvent.eventType.command, curEvent.action, Event.pktNumber, EventResponse.invalidJsonPacketsReceived)

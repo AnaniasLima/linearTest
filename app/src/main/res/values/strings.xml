@@ -16,11 +16,14 @@
     <string name="clear">CLEAR</string>
     <string name="tag">TAG</string>
 
+    <string name="logTx">Log TX</string>
+    <string name="logRx">Log RX</string>
     <string name="sendOn">Send\nOn</string>
     <string name="sendOff">Send\nOff</string>
     <string name="receiveOn">Receive\nOn</string>
     <string name="receiveOff">Receive\nOff</string>
 
+    <string name="billAcceptorSwitch">Noteiro</string>
     <string name="billAcceptorOn">Noteiro\nOn</string>
     <string name="billAcceptorOff">Noteiro\nOff</string>
     <string name="billAcceptorQuestion">Noteiro\nQuestion</string>
@@ -28,7 +31,7 @@
     <string name="startStateMachine">Start\nFSM</string>
     <string name="stopStateMachine">Stop\nFSM</string>
 
-    <string name="automaticBillAcceptor">Noteiro\nAutomatico</string>
+    <string name="automaticBillAcceptor">Noteiro Automático</string>
 
 
 </resources>

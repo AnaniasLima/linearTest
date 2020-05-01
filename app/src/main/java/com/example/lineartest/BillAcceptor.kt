@@ -35,7 +35,8 @@ enum class DeviceCommand  {
 object BillAcceptor {
     val WAIT_WHEN_OFFLINE = 5000L
     val WAIT_TIME_TO_QUESTION = 10000L
-    val WAIT_TIME_TO_RESPONSE = 100L
+    val WAIT_TIME_TO_RESPONSE = 300L
+    val WAIT_TIME_IMEDIATE = 10L
     val BUSY_LIMIT_COUNTER = 10
 
     var mainActivity: AppCompatActivity? = null
@@ -70,8 +71,7 @@ object BillAcceptor {
             10 -> sendCommandToDevice(DeviceCommand.SIMULA10REAIS)
             50 -> sendCommandToDevice(DeviceCommand.SIMULA50REAIS)
         }
-        sendCommandToDevice(DeviceCommand.QUESTION)
-        deviceChecking(WAIT_TIME_TO_RESPONSE)
+//        deviceChecking(WAIT_TIME_TO_RESPONSE)
     }
 
     fun isEnabled() : Boolean {
@@ -90,6 +90,7 @@ object BillAcceptor {
 
     fun SendTurnOn() {
         sendCommandToDevice(DeviceCommand.ON)
+        sendCommandToDevice(DeviceCommand.QUESTION)
     }
 
     fun SendTurnOff() {
@@ -105,17 +106,23 @@ object BillAcceptor {
     }
 
     fun turnOn() {
-        desiredState = DeviceState.ON
-//        sendCommandToDevice(DeviceCommand.ON)
-//        sendCommandToDevice(DeviceCommand.QUESTION)
-        deviceChecking(WAIT_TIME_TO_RESPONSE)
+        if ( stateMachineRunning ) {
+            desiredState = DeviceState.ON
+            deviceChecking(WAIT_TIME_TO_RESPONSE)
+        } else {
+            sendCommandToDevice(DeviceCommand.ON)
+            sendCommandToDevice(DeviceCommand.QUESTION)
+        }
     }
 
     fun turnOff() {
-        desiredState = DeviceState.OFF
-//        sendCommandToDevice(DeviceCommand.OFF)
-//        sendCommandToDevice(DeviceCommand.QUESTION)
-        deviceChecking(WAIT_TIME_TO_RESPONSE)
+        if ( stateMachineRunning ) {
+            desiredState = DeviceState.OFF
+            deviceChecking(WAIT_TIME_TO_RESPONSE)
+        } else {
+            sendCommandToDevice(DeviceCommand.OFF)
+            sendCommandToDevice(DeviceCommand.QUESTION)
+        }
     }
 
 
@@ -142,7 +149,11 @@ object BillAcceptor {
 
     private var deviceCheckRunnable = Runnable {
 
-        if ( receivedState != desiredState ) {
+        if ( receivedState == desiredState ) {
+            Timber.i("receivedState=%s  desiredState=%s", receivedState, desiredState)
+            sendCommandToDevice(DeviceCommand.QUESTION)
+            deviceChecking(WAIT_TIME_TO_QUESTION ) // Ao receber a resposta de QUESTION vai agendar um novo QUESTION
+        } else {
 
             when (desiredState) {
                 DeviceState.RESET -> {
@@ -150,28 +161,27 @@ object BillAcceptor {
                 }
                 DeviceState.ON -> {
                     sendCommandToDevice(DeviceCommand.ON)
-                    sendCommandToDevice(DeviceCommand.QUESTION)
+//                    sendCommandToDevice(DeviceCommand.QUESTION)
                 }
                 DeviceState.OFF -> {
                     sendCommandToDevice(DeviceCommand.OFF)
-                    sendCommandToDevice(DeviceCommand.QUESTION)
+//                    sendCommandToDevice(DeviceCommand.QUESTION)
                 }
                 else -> {
                     desiredState = DeviceState.ON
                     sendCommandToDevice(DeviceCommand.ON)
-                    sendCommandToDevice(DeviceCommand.QUESTION)
+//                    sendCommandToDevice(DeviceCommand.QUESTION)
                     println("ATENÇÃO: CCC Situação nao deveria ocorrer. Preciso reavaliara") // TODO: Verificar se vai ocorrer
                 }
             }
-        } else {
-            sendCommandToDevice(DeviceCommand.QUESTION)
+            deviceChecking(WAIT_TIME_TO_RESPONSE)
         }
-        deviceChecking(0L)
     }
 
 
 
     fun processReceivedResponse(response : EventResponse) {
+        var resetTimer= 0L
 
         if ( ! stateMachineRunning ) {
             return
@@ -199,8 +209,10 @@ object BillAcceptor {
 
             when (response.action ) {
                 Event.ON -> {
+                    sendCommandToDevice(DeviceCommand.QUESTION)
                 }
                 Event.OFF -> {
+                    sendCommandToDevice(DeviceCommand.QUESTION)
                 }
 
                 Event.QUESTION -> {
@@ -235,13 +247,21 @@ object BillAcceptor {
                         if ( (mainActivity as MainActivity).checkBoxBillAcceptorAutomatic.isChecked) {
                             desiredState = DeviceState.ON
                             sendCommandToDevice(DeviceCommand.ON)
-                            sendCommandToDevice(DeviceCommand.QUESTION)
                         }
                     }
                 }
-                Event.SIMULA5REAIS  -> Timber.i("Not processes : ${response.action}")
-                Event.SIMULA10REAIS -> Timber.i("Not processes : ${response.action}")
-                Event.SIMULA50REAIS -> Timber.i("Not processes : ${response.action}")
+                Event.SIMULA5REAIS  -> {
+                    Timber.i("Not processes : ${response.action}")
+                    sendCommandToDevice(DeviceCommand.QUESTION)
+                }
+                Event.SIMULA10REAIS  -> {
+                    Timber.i("Not processes : ${response.action}")
+                    sendCommandToDevice(DeviceCommand.QUESTION)
+                }
+                Event.SIMULA50REAIS  -> {
+                    Timber.i("Not processes : ${response.action}")
+                    sendCommandToDevice(DeviceCommand.QUESTION)
+                }
                 else -> {
                     Timber.e("Invalid Response from BillAcceptor")
                 }
@@ -251,7 +271,9 @@ object BillAcceptor {
         }
 
         // Sempre vamos resetar o tempo da execução automatica
-        deviceChecking(0L)
+        if ( resetTimer > 0 ) {
+            deviceChecking(resetTimer)
+        }
     }
 
 
@@ -305,17 +327,14 @@ object BillAcceptor {
                 if ( receivedState == DeviceState.OFF) {
                     Timber.e("Estando no estado OFF, podemos mandar RESET")
                     sendCommandToDevice(DeviceCommand.RESET)
-                    sendCommandToDevice(DeviceCommand.QUESTION)
                 } else {
                     Timber.e("Ainda não esta no estado OFF, vamos tentar desligar de novo")
                     sendCommandToDevice(DeviceCommand.OFF)
-                    sendCommandToDevice(DeviceCommand.QUESTION)
                 }
             }
         } else {
             Timber.e("Vamos iniciar modo RESET enviando um OFF e um QUESTION")
             sendCommandToDevice(DeviceCommand.OFF)
-            sendCommandToDevice(DeviceCommand.QUESTION)
             desiredState = DeviceState.RESET
         }
     }

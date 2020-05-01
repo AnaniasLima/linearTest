@@ -9,7 +9,7 @@
         android:id="@+id/topArea1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
+        android:background="@color/colorTopArea1"
         android:orientation="horizontal">
 
         <Button
@@ -37,14 +37,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"/>
 
-        <CheckBox
-            android:id="@+id/checkBoxBillAcceptorAutomatic"
-            android:text="@string/automaticBillAcceptor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
-
         <Button
             android:id="@+id/btnLogTag"
             android:text="@string/tag"
@@ -54,14 +46,35 @@
             android:layout_weight="1"/>
 
 
-
-        <Button
-            android:id="@+id/btnEchoReceive"
-            android:text="@string/receiveOn"
+        <CheckBox
+            android:id="@+id/checkBoxBillAcceptorAutomatic"
+            android:text="@string/automaticBillAcceptor"
+            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
+
+
+        <CheckBox
+            android:id="@+id/checkBoxLogTX"
+            android:text="@string/logTx"
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+        <CheckBox
+            android:id="@+id/checkBoxLogRX"
+            android:text="@string/logRx"
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+
 
     </LinearLayout>
 
@@ -70,7 +83,7 @@
         android:id="@+id/topArea2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
+        android:background="@color/colorTopArea2"
         android:orientation="horizontal">
 
         <Button
@@ -98,13 +111,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/button14"
-            android:text="@string/cmd_05"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnLogClear"
@@ -115,13 +121,47 @@
             android:layout_weight="1"/>
 
 
-        <Button
-            android:id="@+id/btnEchoSend"
-            android:text="@string/sendOn"
+        <CheckBox
+            android:id="@+id/check100ms"
+            android:text="100ms"
+            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
+
+        <CheckBox
+            android:id="@+id/check50ms"
+            android:text="50ms"
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+        <CheckBox
+            android:id="@+id/check30ms"
+            android:text="30ms"
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+        <CheckBox
+            android:id="@+id/check10ms"
+            android:text="10ms"
+            android:checked="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+
+
+
+
+
     </LinearLayout>
 
 
