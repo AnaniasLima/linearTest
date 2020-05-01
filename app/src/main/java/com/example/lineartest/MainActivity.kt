@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -85,17 +86,36 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             btnLogClear -> {
-                stringGiganteMostraNaTela = ""
-                textView.setText(stringGiganteMostraNaTela)
+                stringTextLog = ""
+                textLog.setText(stringTextLog)
             }
             btnLogTag -> {
                 mostraNaTela("")
                 mostraNaTela("")
             }
 
-            btn5reais -> BillAcceptor.fakeBillAccept(5)
-            btn10reais -> BillAcceptor.fakeBillAccept(10)
-            btn50reais -> BillAcceptor.fakeBillAccept(50)
+            btn5reais -> {
+                if ( BillAcceptor.isEnabled() ) {
+                    BillAcceptor.fakeBillAccept(5)
+                } else {
+                    Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
+                }
+            }
+            btn10reais -> {
+                if ( BillAcceptor.isEnabled() ) {
+                    BillAcceptor.fakeBillAccept(10)
+                } else {
+                    Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            btn50reais -> {
+                if ( BillAcceptor.isEnabled() ) {
+                    BillAcceptor.fakeBillAccept(50)
+                } else {
+                    Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
+                }
+            }
 
             btnBillAcceptorOn -> BillAcceptor.SendTurnOn()
             btnBillAcceptorOff -> BillAcceptor.SendTurnOff()
@@ -114,10 +134,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
 
-    private var stringGiganteMostraNaTela: String = ""
+    // ------------- textLog --------------
+    private var stringTextLog: String = ""
     private var mostraNaTelaHandler = Handler()
     private var updateMostraNaTela = Runnable {
-        textView.setText(stringGiganteMostraNaTela)
+        textLog.setText(stringTextLog)
     }
     fun mostraNaTela(str:String) {
         val strHora1 = SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().time)
@@ -125,10 +146,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         Timber.i(newString)
 
-        stringGiganteMostraNaTela = "  $newString\n$stringGiganteMostraNaTela"
+        stringTextLog = "  $newString\n$stringTextLog"
 
         mostraNaTelaHandler.removeCallbacks(updateMostraNaTela)
         mostraNaTelaHandler.postDelayed(updateMostraNaTela, 10)
     }
+
+
+    // ------------- textHistory --------------
+    private var stringTextHistory: String = ""
+    private var mostraEmHistoryHandler = Handler()
+    private var updateEmHistory = Runnable {
+        textHistory.setText(stringTextHistory)
+    }
+    fun mostraEmHistory(str:String) {
+        val strHora1 = SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().time)
+        val newString = "$strHora1 - $str"
+
+        Timber.i(newString)
+
+        stringTextHistory = "  $newString\n$stringTextHistory"
+
+        mostraEmHistoryHandler.removeCallbacks(updateEmHistory)
+        mostraEmHistoryHandler.postDelayed(updateEmHistory, 10)
+    }
+
 
 }

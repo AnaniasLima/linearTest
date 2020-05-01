@@ -28,6 +28,7 @@
     <string name="startStateMachine">Start\nFSM</string>
     <string name="stopStateMachine">Stop\nFSM</string>
 
+    <string name="automaticBillAcceptor">Noteiro\nAutomatico</string>
 
 
 </resources>

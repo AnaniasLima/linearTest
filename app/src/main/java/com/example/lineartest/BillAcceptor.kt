@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,7 +34,7 @@ enum class DeviceCommand  {
 @SuppressLint("StaticFieldLeak")
 object BillAcceptor {
     val WAIT_WHEN_OFFLINE = 5000L
-    val WAIT_TIME_TO_QUESTION = 1000L
+    val WAIT_TIME_TO_QUESTION = 10000L
     val WAIT_TIME_TO_RESPONSE = 100L
     val BUSY_LIMIT_COUNTER = 10
 
@@ -55,6 +56,13 @@ object BillAcceptor {
     var stateMachineRunning = false
 
 
+    private fun mostraNaTela(str:String) {
+        (mainActivity as MainActivity).mostraNaTela(str)
+    }
+
+    private fun mostraEmHistory(str:String) {
+        (mainActivity as MainActivity).mostraEmHistory(str)
+    }
 
     fun fakeBillAccept(value: Int) {
         when (value) {
@@ -62,7 +70,12 @@ object BillAcceptor {
             10 -> sendCommandToDevice(DeviceCommand.SIMULA10REAIS)
             50 -> sendCommandToDevice(DeviceCommand.SIMULA50REAIS)
         }
+        sendCommandToDevice(DeviceCommand.QUESTION)
         deviceChecking(WAIT_TIME_TO_RESPONSE)
+    }
+
+    fun isEnabled() : Boolean {
+        return receivedState == DeviceState.ON
     }
 
     fun StartStateMachine()  {
@@ -188,9 +201,6 @@ object BillAcceptor {
                 Event.ON -> {
                 }
                 Event.OFF -> {
-                    if ( desiredState == DeviceState.RESET ) {
-                        resetCredits()
-                    }
                 }
 
                 Event.QUESTION -> {
@@ -221,9 +231,12 @@ object BillAcceptor {
                     if ( receivedValue > 0 ) {
                         sendCreditToController(receivedValue)
                         receivedValue = 0
-                        desiredState = DeviceState.OFF
-                        sendCommandToDevice(DeviceCommand.OFF)
-                        sendCommandToDevice(DeviceCommand.QUESTION)
+
+                        if ( (mainActivity as MainActivity).checkBoxBillAcceptorAutomatic.isChecked) {
+                            desiredState = DeviceState.ON
+                            sendCommandToDevice(DeviceCommand.ON)
+                            sendCommandToDevice(DeviceCommand.QUESTION)
+                        }
                     }
                 }
                 Event.SIMULA5REAIS  -> Timber.i("Not processes : ${response.action}")
@@ -236,6 +249,9 @@ object BillAcceptor {
         } else {
             Timber.e("Invalid ret in response of ${response.cmd} : ${response.ret}")
         }
+
+        // Sempre vamos resetar o tempo da execução automatica
+        deviceChecking(0L)
     }
 
 
@@ -273,27 +289,31 @@ object BillAcceptor {
 
     private fun sendCreditToController(value : Int) {
         Timber.i("CREDITAR ${value}") // TODO: integrar com interface
+        mostraEmHistory("CREDITAR ${value}")
     }
 
     private fun resetCredits() {
-        Timber.e("resetCredits ${desiredState} == ${DeviceState.RESET}")
+        Timber.i("resetCredits  Desired:${desiredState}  receivedState:${receivedState}")
         if ( desiredState == DeviceState.RESET ) {
             if ( receivedValue == 0) {
-                Timber.e("setando desiredState para OFF")
+                Timber.e("Estavamos aguardando zerar receivedValue. Como ZEROU vamos mandar colocar estado target = OFF")
                 desiredState = DeviceState.OFF
-                sendCommandToDevice(DeviceCommand.OFF)
+//                sendCommandToDevice(DeviceCommand.OFF)
                 sendCommandToDevice(DeviceCommand.QUESTION)
             } else {
                 // Só vamos aceitar credito quando recebermos um valor no estado OFF
                 if ( receivedState == DeviceState.OFF) {
+                    Timber.e("Estando no estado OFF, podemos mandar RESET")
                     sendCommandToDevice(DeviceCommand.RESET)
                     sendCommandToDevice(DeviceCommand.QUESTION)
                 } else {
+                    Timber.e("Ainda não esta no estado OFF, vamos tentar desligar de novo")
                     sendCommandToDevice(DeviceCommand.OFF)
                     sendCommandToDevice(DeviceCommand.QUESTION)
                 }
             }
         } else {
+            Timber.e("Vamos iniciar modo RESET enviando um OFF e um QUESTION")
             sendCommandToDevice(DeviceCommand.OFF)
             sendCommandToDevice(DeviceCommand.QUESTION)
             desiredState = DeviceState.RESET

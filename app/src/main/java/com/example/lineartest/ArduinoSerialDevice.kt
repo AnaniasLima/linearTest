@@ -45,6 +45,10 @@ object ArduinoSerialDevice {
         (mainActivity as MainActivity).mostraNaTela(str)
     }
 
+    private fun mostraEmHistory(str:String) {
+        (mainActivity as MainActivity).mostraEmHistory(str)
+    }
+
 
     private var usbSerialRunnable = Runnable {
         if ( ConnectThread.isConnected ) {
@@ -104,11 +108,11 @@ object ArduinoSerialDevice {
                         mostraNaTela("ACTION_USB_PERMISSION------------------------- Permmissao concedida = ${granted.toString()}")
                     }
                     UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
-                        (mainActivity as MainActivity).mostraNaTela("ACTION_USB_DEVICE_ATTACHED")
+                        mostraNaTela("ACTION_USB_DEVICE_ATTACHED")
                         connect()
                     }
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> {
-                        (mainActivity as MainActivity).mostraNaTela("ACTION_USB_DEVICE_DETACHED")
+                        mostraNaTela("ACTION_USB_DEVICE_DETACHED")
                         disconnect()
                     }
                 }

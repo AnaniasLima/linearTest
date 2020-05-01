@@ -38,6 +38,9 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         (mainActivity as MainActivity).mostraNaTela(str)
     }
 
+    private fun mostraEmHistory(str:String) {
+        (mainActivity as MainActivity).mostraEmHistory(str)
+    }
 
     /**
      * Create an Event and add in the List of Events to be sent by serial port
@@ -96,7 +99,11 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
     fun onCommandReceived(commandReceived: String) {
 
-        println("@@@ RX ==> ${commandReceived}")
+        if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX) > 0  ) {
+            mostraNaTela("RX: ${commandReceived}")
+        }
+
+//        println("@@@ RX ==> ${commandReceived}")
         try {
             val eventResponse = Gson().fromJson(commandReceived, EventResponse::class.java)
             EventType.getByCommand(eventResponse.cmd)?.let {
@@ -114,9 +121,6 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
             return
         }
 
-        if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX) > 0  ) {
-            mostraNaTela("RX: ${commandReceived}")
-        }
     }
 
     /**
@@ -249,9 +253,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         try {
             var pktStr: String = Event.getCommandData(curEvent)
 
-            println("@@@ TX ==> ${pktStr}")
-
-
+//            println("@@@ TX ==> ${pktStr}")
 
             if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX) == 1 ) {
                 mostraNaTela("TX: $pktStr")
