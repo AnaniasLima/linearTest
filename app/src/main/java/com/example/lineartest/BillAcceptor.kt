@@ -27,7 +27,7 @@ enum class DeviceCommand  {
     QUESTION,
     SIMULA5REAIS,
     SIMULA10REAIS,
-    SIMULA50REAIS;
+    SIMULA50REAIS
 }
 
 
@@ -73,6 +73,7 @@ object BillAcceptor {
         }
 //        deviceChecking(WAIT_TIME_TO_RESPONSE)
     }
+
 
     fun isEnabled() : Boolean {
         return receivedState == DeviceState.ON
@@ -193,6 +194,7 @@ object BillAcceptor {
         }
 
         if (response.ret == EventResponse.ERROR ) {
+            Timber.e("ERROR: ${response}")
             inErrorStateCounter++
             return
         }
@@ -267,7 +269,17 @@ object BillAcceptor {
                 }
             }
         } else {
-            Timber.e("Invalid ret in response of ${response.cmd} : ${response.ret}")
+
+            Timber.e("Invalid ret in response of mcd:${response.cmd} : ret:${response.ret} action:${response.action} ")
+            if ( response.action == Event.SIMULA5REAIS) {
+                mostraEmHistory("REJEITOU NOTA 5")
+            }
+            if ( response.action == Event.SIMULA10REAIS) {
+                mostraEmHistory("REJEITOU NOTA 10")
+            }
+            if ( response.action == Event.SIMULA50REAIS) {
+                mostraEmHistory("REJEITOU NOTA 50")
+            }
         }
 
         // Sempre vamos resetar o tempo da execução automatica
@@ -325,7 +337,7 @@ object BillAcceptor {
             } else {
                 // Só vamos aceitar credito quando recebermos um valor no estado OFF
                 if ( receivedState == DeviceState.OFF) {
-                    Timber.e("Estando no estado OFF, podemos mandar RESET")
+                    Timber.i("Estando no estado OFF, podemos mandar RESET")
                     sendCommandToDevice(DeviceCommand.RESET)
                 } else {
                     Timber.e("Ainda não esta no estado OFF, vamos tentar desligar de novo")
@@ -333,7 +345,7 @@ object BillAcceptor {
                 }
             }
         } else {
-            Timber.e("Vamos iniciar modo RESET enviando um OFF e um QUESTION")
+            Timber.i("Vamos iniciar modo RESET enviando um OFF e um QUESTION")
             sendCommandToDevice(DeviceCommand.OFF)
             desiredState = DeviceState.RESET
         }

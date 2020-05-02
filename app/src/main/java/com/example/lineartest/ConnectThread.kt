@@ -30,8 +30,8 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
     companion object {
         var CONNECT = 1
         var DISCONNECT = 0
-        val WAITTIME : Long = 100L
-        val MICROWAITTIME : Long = 130L
+        val WAIT_INTER_PACKETS : Long = 20L
+        val WAITTIME : Long = 50L
         var isConnected: Boolean  = false
     }
 
@@ -51,6 +51,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         if ( isConnected && (!finishThread )) {
             val event = Event(eventType = eventType, action = action)
             EVENT_LIST.add(event)
+            Timber.i("Eventos na lista ${action}: ${EVENT_LIST.size}")
             return true
         }
         return false
@@ -140,21 +141,11 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                         sleep(WAITTIME)
                     }  else {
                         val event = EVENT_LIST[0]
-                        var waitTime = 0L
-                        if ( (mainActivity as MainActivity).check100ms.isChecked) waitTime += 100L
-                        if ( (mainActivity as MainActivity).check50ms.isChecked) waitTime += 50L
-                        if ( (mainActivity as MainActivity).check30ms.isChecked) waitTime += 30L
-                        if ( (mainActivity as MainActivity).check10ms.isChecked) waitTime += 10L
-
-                        if ( waitTime == 0L ) {
-                            waitTime = MICROWAITTIME
-                        }
-
-
-//                        Timber.e("Evento: %s-%s (%s)", event.eventType, event.action, event.requestToSendtimeStamp)
                         send(event)
-                        sleep(waitTime) // TODO: Ver qual o problema que se diminuir esse tempo o Arduino não responde o segundo comando
                         EVENT_LIST.removeAt(0)
+                        if ( ! EVENT_LIST.isEmpty()) {
+                            sleep(WAIT_INTER_PACKETS)
+                        }
                     }
                 }
                 disconnectInBackground()
@@ -269,11 +260,11 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         try {
             if ( (curEvent.eventType.toString() == lastEventType) && (curEvent.action == lastEventAction) ) {
                 var dif = curEvent.timestamp - lastEventTimestamp
-                if ( dif < 500 )  {
+                if ( dif < 100 )  {
                     Timber.i("@@@ DROPANDO eventType=${curEvent.eventType} action=${curEvent.action} timestamp=${curEvent.timestamp}")
                     return
                 } else {
-                    Timber.i("@@@ eventType=${curEvent.eventType} action=${curEvent.action} dif =${dif}")
+//                    Timber.i("@@@ eventType=${curEvent.eventType} action=${curEvent.action} dif =${dif}")
                 }
             }
 

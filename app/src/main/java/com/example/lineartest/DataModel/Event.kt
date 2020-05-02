@@ -20,6 +20,8 @@ data class Event(
         val SIMULA5REAIS = "simula5"
         val SIMULA10REAIS = "simula10"
         val SIMULA50REAIS = "simula50"
+//        val LED_ON = "ledON"
+//        val LED_OFF = "ledOFF"
 
         var pktNumber: Int = 0
         var statusPktNumber: Int = 0

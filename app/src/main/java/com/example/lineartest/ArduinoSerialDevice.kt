@@ -95,6 +95,9 @@ object ArduinoSerialDevice {
 //                Timber.e("FW_BILL_ACCEPTOR =====> ${eventResponse.toString()}")
                 BillAcceptor.processReceivedResponse(eventResponse)
             }
+            EventType.FW_LED -> {
+//                Timber.e("FW_LED =====> ${eventResponse.toString()}")
+            }
 
         }
     }
@@ -170,9 +173,11 @@ object ArduinoSerialDevice {
                     EventType.FW_STATUS_RQ -> {
                         connectThread!!.requestToSend(eventType = EventType.FW_STATUS_RQ, action=action)
                     }
-
                     EventType.FW_BILL_ACCEPTOR -> {
                         connectThread!!.requestToSend(eventType = EventType.FW_BILL_ACCEPTOR, action=action)
+                    }
+                    EventType.FW_LED -> {
+                        connectThread!!.requestToSend(eventType = EventType.FW_LED, action=action)
                     }
                     else -> {
                         // do nothing

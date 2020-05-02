@@ -8,6 +8,8 @@ import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import com.example.lineartest.DataModel.Event
+import com.example.lineartest.DataModel.EventType
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -62,6 +64,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn5reais.setOnClickListener(this)
         btn10reais.setOnClickListener(this)
         btn50reais.setOnClickListener(this)
+        btnLedOn.setOnClickListener(this)
+        btnLedOff.setOnClickListener(this)
+        btnLedOnOff.setOnClickListener(this)
 
     }
 
@@ -88,11 +93,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            }
             btnLogClear -> {
                 stringTextLog = ""
+                stringTextHistory = ""
                 textLog.setText(stringTextLog)
+                textHistory.setText(stringTextHistory)
             }
             btnLogTag -> {
                 mostraNaTela("")
                 mostraNaTela("")
+                mostraEmHistory("")
+                mostraEmHistory("")
             }
 
             btn5reais -> {
@@ -119,6 +128,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 } else {
                     Toast.makeText(this, "Noteiro desabilitado", Toast.LENGTH_SHORT).show()
                 }
+            }
+            btnLedOn -> {
+                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.ON)
+            }
+            btnLedOff -> {
+                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.OFF)
+            }
+
+            btnLedOnOff -> {
+                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.ON)
+                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.OFF)
+
+//                BillAcceptor.led(1)
+//                BillAcceptor.led(0)
             }
 
             btnBillAcceptorOn -> BillAcceptor.SendTurnOn()

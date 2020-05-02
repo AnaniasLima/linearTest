@@ -120,47 +120,20 @@
             android:layout_gravity="center"
             android:layout_weight="1"/>
 
-
-        <CheckBox
-            android:id="@+id/check100ms"
-            android:text="100ms"
-            android:checked="true"
+        <Button
+            android:id="@+id/btn15"
+            android:text="CMD15"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
-
-        <CheckBox
-            android:id="@+id/check50ms"
-            android:text="50ms"
-            android:checked="true"
+        <Button
+            android:id="@+id/btn16"
+            android:text="CMD16"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
-
-        <CheckBox
-            android:id="@+id/check30ms"
-            android:text="30ms"
-            android:checked="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
-
-        <CheckBox
-            android:id="@+id/check10ms"
-            android:text="10ms"
-            android:checked="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
-
-
-
-
-
 
     </LinearLayout>
 
@@ -232,5 +205,29 @@
             android:background="@drawable/bill50reais"
             android:layout_marginStart="20dp"
             android:layout_gravity="start"/>
+
+        <Button
+            android:id="@+id/btnLedOn"
+            android:text="LedOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btnLedOff"
+            android:text="LedOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btnLedOnOff"
+            android:text="LedOn/Off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"/>
+
     </LinearLayout>
 </LinearLayout>
