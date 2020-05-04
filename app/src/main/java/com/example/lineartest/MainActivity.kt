@@ -2,22 +2,17 @@ package com.example.lineartest
 
 import android.content.Context
 import android.hardware.usb.UsbManager
-import android.opengl.GLES32
-import android.opengl.GLES32.GL_DEBUG_SOURCE_API
-import android.opengl.GLES32.glDebugMessageControl
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventType
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.microedition.khronos.opengles.GL10.GL_DONT_CARE
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -31,14 +26,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         //
-        // ----- ArduinoSerialDevice
+        // ----- ArduinoDevice
         //
-        ArduinoSerialDevice.usbManager =
+        ArduinoDevice.usbManager =
             applicationContext.getSystemService(Context.USB_SERVICE) as UsbManager
-        ArduinoSerialDevice.myContext = applicationContext
-        ArduinoSerialDevice.mainActivity = this
-        ArduinoSerialDevice.usbSetFilters()
-        ArduinoSerialDevice.usbSerialContinueChecking()
+        ArduinoDevice.myContext = applicationContext
+        ArduinoDevice.mainActivity = this
+        ArduinoDevice.usbSetFilters()
+        ArduinoDevice.usbSerialContinueChecking()
 
         //
         // ----- BillAcceptor
@@ -77,8 +72,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btnLogClear -> {
                 stringTextLog = ""
                 stringTextHistory = ""
+                stringTextResult = ""
                 textLog.setText(stringTextLog)
                 textHistory.setText(stringTextHistory)
+                textResult.setText(stringTextResult)
+                valorAcumulado = 0
             }
 
             btnLogTag -> {
@@ -108,14 +106,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             btnLedOn -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.ON)
+                ArduinoDevice.requestToSend(EventType.FW_LED, Event.ON)
             }
             btnLedOff -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.OFF)
+                ArduinoDevice.requestToSend(EventType.FW_LED, Event.OFF)
             }
             btnLedOnOff -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.ON)
-                ArduinoSerialDevice.requestToSend(EventType.FW_LED, Event.OFF)
+                ArduinoDevice.requestToSend(EventType.FW_LED, Event.ON)
+                ArduinoDevice.requestToSend(EventType.FW_LED, Event.OFF)
             }
 
             btnBillAcceptorOn -> BillAcceptor.SendTurnOn()
@@ -170,6 +168,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         mostraEmHistoryHandler.removeCallbacks(updateEmHistory)
         mostraEmHistoryHandler.postDelayed(updateEmHistory, 10)
+    }
+
+
+    // ------------- textResult--------------
+    private var stringTextResult: String = ""
+    private var valorAcumulado: Int = 0
+    private var mostraEmResultHandler = Handler()
+    private var updateEmResult = Runnable {
+        textResult.setText(stringTextResult)
+    }
+    fun mostraEmResult(valor: Int) {
+        valorAcumulado += valor
+        stringTextResult = "R$ ${valorAcumulado},00 "
+        Timber.i("Total Recebido: ${stringTextResult}")
+        mostraEmHistoryHandler.removeCallbacks(updateEmResult)
+        mostraEmHistoryHandler.postDelayed(updateEmResult, 10)
     }
 
 

@@ -64,6 +64,10 @@ object BillAcceptor {
         (mainActivity as MainActivity).mostraEmHistory(str)
     }
 
+    private fun mostraEmResult(valor : Int) {
+        (mainActivity as MainActivity).mostraEmResult(valor)
+    }
+
     fun fakeBillAccept(value: Int) {
         when (value) {
             5 -> sendCommandToDevice(DeviceCommand.SIMULA5REAIS)
@@ -232,8 +236,18 @@ object BillAcceptor {
 
                     Event.QUESTION -> {
                         when(response.status) {
-                            Event.ON -> receivedState = DeviceState.ON
-                            Event.OFF -> receivedState = DeviceState.OFF
+                            Event.ON -> {
+                                mainActivity?.runOnUiThread(java.lang.Runnable {
+                                    (mainActivity as MainActivity).btnBillAcceptorColor.setBackgroundResource(R.drawable.green_bill_acceptor)
+                                })
+                                receivedState = DeviceState.ON
+                            }
+                            Event.OFF -> {
+                                mainActivity?.runOnUiThread(java.lang.Runnable {
+                                    (mainActivity as MainActivity).btnBillAcceptorColor.setBackgroundResource(R.drawable.red_bill_acceptor)
+                                })
+                                receivedState = DeviceState.OFF
+                            }
                         }
                         // Quando receber uma resposta com um valor > 0
                         // Vamos mandar desligar o noteiro e quando ele estiver desligado e com
@@ -295,29 +309,29 @@ object BillAcceptor {
 
         when (cmd) {
             DeviceCommand.OFF -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.OFF)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.OFF)
             }
             DeviceCommand.ON -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.ON)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.ON)
                 turnOnTimeStamp = Date().time.toString()
             }
             DeviceCommand.QUESTION -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.QUESTION)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.QUESTION)
             }
             DeviceCommand.RESET -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.RESET)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.RESET)
             }
             DeviceCommand.SIMULA5REAIS -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA5REAIS)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA5REAIS)
             }
             DeviceCommand.SIMULA10REAIS -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA10REAIS)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA10REAIS)
             }
             DeviceCommand.SIMULA20REAIS -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA20REAIS)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA20REAIS)
             }
             DeviceCommand.SIMULA50REAIS -> {
-                ArduinoSerialDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA50REAIS)
+                ArduinoDevice.requestToSend(EventType.FW_BILL_ACCEPTOR, Event.SIMULA50REAIS)
             }
         }
     }
@@ -326,6 +340,8 @@ object BillAcceptor {
     private fun sendCreditToController(value : Int) {
         Timber.i("CREDITAR ${value}") // TODO: integrar com interface
         mostraEmHistory("CREDITAR ${value}")
+        mostraEmResult(value)
+
     }
 
     private fun resetCredits() {

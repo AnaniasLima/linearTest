@@ -24,23 +24,22 @@ enum class FunctionType {
 
 
 @SuppressLint("StaticFieldLeak")
-object ArduinoSerialDevice {
+object ArduinoDevice {
 
-    private var USB_SERIAL_REQUEST_INTERVAL = 30000L
-    private var USB_SERIAL_TIME_TO_CONNECT_INTERVAL = 10000L
-    private var usbSerialRequestHandler = Handler()
+    const val ACTION_USB_PERMISSION = "permission"
+    private const val USB_SERIAL_REQUEST_INTERVAL = 30000L
+    private const val USB_SERIAL_TIME_TO_CONNECT_INTERVAL = 10000L
 
     var mainActivity: AppCompatActivity? = null
-    var usbManager  : UsbManager? = null
     var myContext: Context? = null
-    val ACTION_USB_PERMISSION = "com.example.lineartest.permission"
+    var usbManager  : UsbManager? = null
 
-    var EVENT_LIST: MutableList<Event> = mutableListOf()
-
+    private var usbSerialRequestHandler = Handler()
+//    private var EVENT_LIST: MutableList<Event> = mutableListOf()
     private var connectThread: ConnectThread? = null
-
     private var rxLogLevel = 0
     private var txLogLevel = 0
+
 
     private fun mostraNaTela(str:String) {
         (mainActivity as MainActivity).mostraNaTela(str)
@@ -72,7 +71,6 @@ object ArduinoSerialDevice {
                 Calendar.getInstance().time.time.plus(delayToNext)) + "(" + delayToNext.toString() + ")")
         }
 
-
         usbSerialRequestHandler.removeCallbacks(usbSerialRunnable)
         usbSerialRequestHandler.postDelayed(usbSerialRunnable, delayToNext)
     }
@@ -101,7 +99,6 @@ object ArduinoSerialDevice {
             else -> {
                 println("===> Falta tratar resposta para comando ${eventResponse.eventType} ")
             }
-
         }
     }
 
@@ -169,18 +166,19 @@ object ArduinoSerialDevice {
 
 
     fun requestToSend(eventType: EventType, action: String) : Boolean {
+        var ret : Boolean = false
 
         if ( ConnectThread.isConnected ) {
             try {
                 when(eventType) {
                     EventType.FW_STATUS_RQ -> {
-                        connectThread!!.requestToSend(eventType = EventType.FW_STATUS_RQ, action=action)
+                        ret = connectThread!!.requestToSend(eventType = EventType.FW_STATUS_RQ, action=action)
                     }
                     EventType.FW_BILL_ACCEPTOR -> {
-                        connectThread!!.requestToSend(eventType = EventType.FW_BILL_ACCEPTOR, action=action)
+                        ret = connectThread!!.requestToSend(eventType = EventType.FW_BILL_ACCEPTOR, action=action)
                     }
                     EventType.FW_LED -> {
-                        connectThread!!.requestToSend(eventType = EventType.FW_LED, action=action)
+                        ret = connectThread!!.requestToSend(eventType = EventType.FW_LED, action=action)
                     }
                     else -> {
                         // do nothing
@@ -191,7 +189,7 @@ object ArduinoSerialDevice {
             }
         }
 
-        return false
+        return ret
     }
 
     fun usbSetFilters() {

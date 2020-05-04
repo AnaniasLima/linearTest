@@ -73,9 +73,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"/>
-
-
-
     </LinearLayout>
 
 
@@ -139,7 +136,7 @@
 
 
     <LinearLayout
-        android:id="@+id/midleArea"
+        android:id="@+id/midleAreaLeft"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -155,13 +152,39 @@
             android:layout_weight="8"
             android:text="" />
 
-
-        <TextView
-            android:id="@+id/textHistory"
+        <LinearLayout
+            android:id="@+id/midleAreaRight"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/colorTextHistory"
-            android:layout_weight="2" />
+            android:background="@color/colorPrimary"
+            android:weightSum="10"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textHistory"
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/colorTextHistory"
+                android:layout_weight="9"
+                />
+
+            <TextView
+                android:id="@+id/textResult"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@color/colorTextResult"
+                android:fontFamily="sans-serif-black"
+                android:text=""
+                android:textAlignment="textEnd"
+                android:textSize="30sp"
+                android:textStyle="bold|italic" />
+
+        </LinearLayout>
+
+
 
     </LinearLayout>
 
@@ -170,52 +193,52 @@
     <LinearLayout
         android:id="@+id/bottonArea"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:background="@color/colorPrimaryDark"
         android:weightSum="10"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnBillAcceptorColor"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/green_bill_acceptor"
-            android:layout_gravity="start"/>
+            android:layout_gravity="center"/>
 
         <Button
             android:id="@+id/btn5reais"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bill5reais"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="start"/>
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center"/>
         <Button
             android:id="@+id/btn10reais"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bill10reais"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="start"/>
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center"/>
         <Button
             android:id="@+id/btn20reais"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bill20reais"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="start"/>
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center"/>
 
         <Button
             android:id="@+id/btn50reais"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bill50reais"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="start"/>
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center"/>
 
         <Button
             android:id="@+id/btnLedOn"

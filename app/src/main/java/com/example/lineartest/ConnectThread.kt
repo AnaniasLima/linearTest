@@ -13,7 +13,6 @@ import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.io.IOException
 import java.util.*
@@ -104,7 +103,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
     fun onCommandReceived(commandReceived: String) {
 
-        if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_RX)   ) {
+        if ( ArduinoDevice.getLogLevel(FunctionType.FX_RX)   ) {
             mostraNaTela("RX: ${commandReceived}")
         }
 
@@ -117,7 +116,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                 if ( eventResponse.eventType == EventType.FW_NACK ) {
                     Timber.e("=============== FW_NACK =======================: ${commandReceived}")
                 } else {
-                    ArduinoSerialDevice.onEventResponse(eventResponse)
+                    ArduinoDevice.onEventResponse(eventResponse)
                 }
             }
         } catch (e: Exception) {
@@ -178,7 +177,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
             var pktStr: String = Event.getCommandData(curEvent)
             usbSerialDevice?.write(pktStr.toByteArray())
 
-            if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX)  ) {
+            if ( ArduinoDevice.getLogLevel(FunctionType.FX_TX)  ) {
                 mostraNaTela("TX: $pktStr")
             } else {
                 Timber.d("TX: $pktStr")
@@ -231,7 +230,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
         if ( isConnected ) {
             mostraNaTela("CONECTADO COM SUCESSO")
-            ArduinoSerialDevice.usbSerialImediateChecking(300)
+            ArduinoDevice.usbSerialImediateChecking(300)
         }
 
         return isConnected
@@ -247,7 +246,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
             }
             usbSerialDevice = null
             Timber.i("-------- disconnectInBackground Fim")
-            ArduinoSerialDevice.usbSerialImediateChecking(100)
+            ArduinoDevice.usbSerialImediateChecking(100)
         }
     }
 
@@ -266,7 +265,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
                     if ( ! usbManager.hasPermission(device)) {
                         mostraNaTela("=============== Device Localizado NAO tem permissao")
-                        val intent: PendingIntent = PendingIntent.getBroadcast(myContext, 0, Intent(ArduinoSerialDevice.ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT)
+                        val intent: PendingIntent = PendingIntent.getBroadcast(myContext, 0, Intent(ArduinoDevice.ACTION_USB_PERMISSION), PendingIntent.FLAG_UPDATE_CURRENT)
                         usbManager.requestPermission(device, intent)
                     } else {
                         mostraNaTela("=============== Device Localizado TEM permissao")
