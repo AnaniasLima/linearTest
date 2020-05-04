@@ -30,6 +30,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
     companion object {
         var CONNECT = 1
         var DISCONNECT = 0
+        val DROP_SAME_COMMAND_TIME_INTERVAL : Long = 100L
         val WAIT_INTER_PACKETS : Long = 20L
         val WAITTIME : Long = 50L
         var isConnected: Boolean  = false
@@ -51,7 +52,9 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         if ( isConnected && (!finishThread )) {
             val event = Event(eventType = eventType, action = action)
             EVENT_LIST.add(event)
-            Timber.i("Eventos na lista ${action}: ${EVENT_LIST.size}")
+            if ( EVENT_LIST.size > 1) {
+                Timber.i("Eventos na lista ${action}: ${EVENT_LIST.size}")
+            }
             return true
         }
         return false
@@ -140,8 +143,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                     if ( EVENT_LIST.isEmpty() ) {
                         sleep(WAITTIME)
                     }  else {
-                        val event = EVENT_LIST[0]
-                        send(event)
+                        send(EVENT_LIST[0])
                         EVENT_LIST.removeAt(0)
                         if ( ! EVENT_LIST.isEmpty()) {
                             sleep(WAIT_INTER_PACKETS)
@@ -156,8 +158,38 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         isConnected = false
     }
 
-    private fun connectInBackground() : Boolean {
+    private var lastEventType: EventType = EventType.FW_NACK // We never send this command
+    private var lastEventAction: String = ""
+    private var lastEventTimestamp: Long = 0L
 
+    private fun send( curEvent: Event) {
+        try {
+            if ( (curEvent.eventType == lastEventType) && (curEvent.action == lastEventAction) ) {
+                if ( (curEvent.timestamp - lastEventTimestamp) < DROP_SAME_COMMAND_TIME_INTERVAL )  {
+                    Timber.i("@@@ DROP_SAME_COMMAND_TIME_INTERVAL eventType=${curEvent.eventType.toString()} action=${curEvent.action} timestamp=${curEvent.timestamp}")
+                    return
+                }
+            }
+
+            lastEventType = curEvent.eventType
+            lastEventAction = curEvent.action
+            lastEventTimestamp = curEvent.timestamp
+
+            var pktStr: String = Event.getCommandData(curEvent)
+            usbSerialDevice?.write(pktStr.toByteArray())
+
+            if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX)  ) {
+                mostraNaTela("TX: $pktStr")
+            } else {
+                Timber.d("TX: $pktStr")
+            }
+        } catch (e: Exception) {
+            Timber.d("Exception in send: ${e.message} ")
+        }
+    }
+
+
+    private fun connectInBackground() : Boolean {
         isConnected = usbSerialDevice?.isOpen ?: false
         if ( isConnected ) {
             return true
@@ -250,49 +282,6 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
             Timber.i("No serial device connected")
         }
         return selectedDevice
-    }
-
-    private var lastEventType: String = ""
-    private var lastEventAction: String = ""
-    private var lastEventTimestamp: Long = 0L
-
-    private fun send( curEvent: Event) {
-        try {
-            if ( (curEvent.eventType.toString() == lastEventType) && (curEvent.action == lastEventAction) ) {
-                var dif = curEvent.timestamp - lastEventTimestamp
-                if ( dif < 100 )  {
-                    Timber.i("@@@ DROPANDO eventType=${curEvent.eventType} action=${curEvent.action} timestamp=${curEvent.timestamp}")
-                    return
-                } else {
-//                    Timber.i("@@@ eventType=${curEvent.eventType} action=${curEvent.action} dif =${dif}")
-                }
-            }
-
-//            Timber.i("@@@ eventType=${curEvent.eventType} action=${curEvent.action} timestamp=${curEvent.timestamp}")
-//            Timber.i("@@@ eventType=${lastEventType} action=${lastEventAction} timestamp=${lastEventTimestamp}")
-
-
-            lastEventType = curEvent.eventType.toString()
-            lastEventAction = curEvent.action
-            lastEventTimestamp = curEvent.timestamp
-
-            var pktStr: String = Event.getCommandData(curEvent)
-
-
-//            println("@@@ TX ==> ${pktStr}")
-
-            if ( ArduinoSerialDevice.getLogLevel(FunctionType.FX_TX)  ) {
-                mostraNaTela("TX: $pktStr")
-            } else {
-                Timber.d("SEND ==> %s(%s) - %d (errosRX:%d)", curEvent.eventType.command, curEvent.action, Event.pktNumber, EventResponse.invalidJsonPacketsReceived)
-            }
-
-            pktStr += "\r\n"
-            usbSerialDevice?.write(pktStr.toByteArray())
-
-        } catch (e: Exception) {
-            Timber.d("Ocorreu uma Exception ")
-        }
     }
 
 

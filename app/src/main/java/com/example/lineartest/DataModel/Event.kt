@@ -19,9 +19,8 @@ data class Event(
         val RESET = "reset"
         val SIMULA5REAIS = "simula5"
         val SIMULA10REAIS = "simula10"
+        val SIMULA20REAIS = "simula20"
         val SIMULA50REAIS = "simula50"
-//        val LED_ON = "ledON"
-//        val LED_OFF = "ledOFF"
 
         var pktNumber: Int = 0
         var statusPktNumber: Int = 0
@@ -83,7 +82,7 @@ data class Event(
             }
 
             commandData.put("packetNumber", pktNumber)
-            commandData.put("timestamp", event.timestamp.toString())
+//            commandData.put("timestamp", event.timestamp.toString())
 //            commandData.put("noteiroOnTimestamp", noteiroOnTimestamp)
             commandData.put("hour", SimpleDateFormat( "HH:mm:SS", Locale.getDefault()).format(Date()))
 
@@ -114,7 +113,7 @@ data class EventResponse(
     var tR: String = "",
     var tB: String = "",
     var tG: String = "",
-    var timestamp: String = "",
+//    var timestamp: String = "",
 //    var noteiroOnTimestamp: String = "",
     var cordinates: String = "",
     var eventType: EventType = EventType.FW_STATUS_RQ) {

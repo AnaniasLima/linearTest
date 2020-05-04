@@ -98,6 +98,9 @@ object ArduinoSerialDevice {
             EventType.FW_LED -> {
 //                Timber.e("FW_LED =====> ${eventResponse.toString()}")
             }
+            else -> {
+                println("===> Falta tratar resposta para comando ${eventResponse.eventType} ")
+            }
 
         }
     }

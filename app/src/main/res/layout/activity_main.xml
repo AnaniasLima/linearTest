@@ -165,6 +165,8 @@
 
     </LinearLayout>
 
+
+
     <LinearLayout
         android:id="@+id/bottonArea"
         android:layout_width="match_parent"
@@ -197,6 +199,15 @@
             android:background="@drawable/bill10reais"
             android:layout_marginStart="20dp"
             android:layout_gravity="start"/>
+        <Button
+            android:id="@+id/btn20reais"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:background="@drawable/bill20reais"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="start"/>
+
         <Button
             android:id="@+id/btn50reais"
             android:layout_width="80dp"
