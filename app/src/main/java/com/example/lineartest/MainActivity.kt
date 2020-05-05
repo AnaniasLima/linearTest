@@ -1,6 +1,7 @@
 package com.example.lineartest
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.usb.UsbManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,9 +22,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
 
         if (BuildConfig.DEBUG) {
-//            Timber.plant(MyDebugTree())
-            Timber.plant(Timber.DebugTree())
+            Timber.plant(MyDebugTree())
+//            Timber.plant(Timber.DebugTree())
         }
+
+        Timber.i("AAA")
+        Timber.v("BBB")
+        Timber.e("CCC")
+        Timber.d("DDD")
 
         //
         // ----- ArduinoDevice
@@ -64,6 +70,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnLedOn.setOnClickListener(this)
         btnLedOff.setOnClickListener(this)
         btnLedOnOff.setOnClickListener(this)
+
+        btn15.setOnClickListener {
+            val intent = Intent(this, LogActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     override fun onClick(v: View?) {
@@ -187,4 +199,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
 
+
 }
+
+//class TTT (val ipAddress:String, val port: Int ) : Thread() {
+//    lateinit var xxx : Socket
+//    lateinit var yyy: DataOutputStream
+//
+//    override fun run() {
+//        try  {
+//            xxx = Socket(ipAddress, port)
+//            yyy = DataOutputStream(xxx.getOutputStream())
+//            yyy.writeUTF("abc\r\n")
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        }
+//    }
+//}
+

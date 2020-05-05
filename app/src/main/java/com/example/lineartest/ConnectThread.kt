@@ -14,7 +14,10 @@ import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
 import com.google.gson.Gson
 import timber.log.Timber
+import java.io.DataOutputStream
 import java.io.IOException
+import java.net.InetAddress
+import java.net.Socket
 import java.util.*
 
 
@@ -189,10 +192,31 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
 
     private fun connectInBackground() : Boolean {
-        isConnected = usbSerialDevice?.isOpen ?: false
-        if ( isConnected ) {
-            return true
-        }
+
+//            var serverAddr = InetAddress.getByName("ananiaslima.brazilsouth.cloudapp.azure.com")
+//            var yyy: DataOutputStream
+//
+//            println( "hostname = $serverAddr.hostName")
+//            println( "address = ${serverAddr.address}")
+//            println( "hostAddress = ${serverAddr.hostAddress}")
+//
+//            val connection: Socket = Socket(serverAddr, 3000)
+//
+//            try  {
+//                yyy = DataOutputStream(connection.getOutputStream())
+//                yyy.writeUTF("abc\r\n")
+//                yyy.writeUTF("def\r\n")
+//            } catch (e: IOException) {
+//                e.printStackTrace()
+//            }
+//
+//            println( "isConnected = ${connection.isConnected}")
+//            sleep(1000)
+//
+//        isConnected = usbSerialDevice?.isOpen ?: false
+//        if ( isConnected ) {
+//            return true
+//        }
 
         try {
             val m_device    : UsbDevice? = selectDevice(0)
