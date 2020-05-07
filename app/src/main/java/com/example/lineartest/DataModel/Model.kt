@@ -2,6 +2,7 @@ package com.example.lineartest.DataModel
 
 data class LogMessage (var message: String)
 
+
 object MessagePool {
     val logMessage = listOf<LogMessage>(
         LogMessage("Msg01"),
@@ -35,5 +36,7 @@ object MessagePool {
         LogMessage("Msg39"),
         LogMessage("Msg40")
     )
+
+
 
 }

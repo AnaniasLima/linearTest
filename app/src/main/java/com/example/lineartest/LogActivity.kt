@@ -1,5 +1,6 @@
 package com.example.lineartest
 
+import android.graphics.Insets.add
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,5 +20,6 @@ class LogActivity : AppCompatActivity() {
 
         val adapter = LogAdapter(this, MessagePool.logMessage)
         logRecyclerView.adapter = adapter
+
     }
 }

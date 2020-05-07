@@ -10,6 +10,7 @@ import com.example.lineartest.DataModel.LogMessage
 import kotlinx.android.synthetic.main.list_item.view.*
 
 class LogAdapter(val context : Context, val logMessages: List<LogMessage>) : RecyclerView.Adapter <LogAdapter.MyViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
        val view =  LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
         return MyViewHolder(view)
@@ -43,5 +44,9 @@ class LogAdapter(val context : Context, val logMessages: List<LogMessage>) : Rec
         }
 
 
+    }
+
+    private fun add() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
