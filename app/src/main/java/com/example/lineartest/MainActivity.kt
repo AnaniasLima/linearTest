@@ -1,13 +1,13 @@
 package com.example.lineartest
 
 import android.content.Context
-import android.content.Intent
 import android.hardware.usb.UsbManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventType
 import kotlinx.android.synthetic.main.activity_main.*
@@ -18,18 +18,29 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    private val MAX_LOG_LINES=300
+
+    var myList = ArrayList<String>()
+    var myBackgroundList = ArrayList<String>()
+    val myAdapter = LogAdapter(this, myList)
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (BuildConfig.DEBUG) {
-            Timber.plant(MyDebugTree())
-//            Timber.plant(Timber.DebugTree())
+//            Timber.plant(MyDebugTree())
+            Timber.plant(Timber.DebugTree())
         }
+
+        setContentView(R.layout.activity_main)
 
         Timber.i("AAA")
         Timber.v("BBB")
         Timber.e("CCC")
         Timber.d("DDD")
+
+
 
         //
         // ----- ArduinoDevice
@@ -39,7 +50,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         ArduinoDevice.myContext = applicationContext
         ArduinoDevice.mainActivity = this
         ArduinoDevice.usbSetFilters()
-        ArduinoDevice.usbSerialContinueChecking()
+//        ArduinoDevice.usbSerialContinueChecking()
+        ArduinoDevice.usbSerialImediateChecking(200)
+
+
 
         //
         // ----- BillAcceptor
@@ -49,7 +63,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        BillAcceptor.StartStateMachine()
 
 
-        setContentView(R.layout.activity_main)
+
+        my_recycler_view.layoutManager = LinearLayoutManager(this)
+        my_recycler_view.adapter = myAdapter
+
         btnBillAcceptorOn.setOnClickListener(this)
         btnBillAcceptorOff.setOnClickListener(this)
         btnBillAcceptorQuestion.setOnClickListener(this)
@@ -71,21 +88,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnLedOff.setOnClickListener(this)
         btnLedOnOff.setOnClickListener(this)
 
-        btn15.setOnClickListener {
-            val intent = Intent(this, LogActivity::class.java)
-            startActivity(intent)
+        btn16.setOnClickListener {
+            Thread {
+                for ( contaLinha in  1..500) {
+                    ArduinoDevice.requestToSend(EventType.FW_LED, Event.ON)
+                    ArduinoDevice.requestToSend(EventType.FW_LED, Event.OFF)
+                    Thread.sleep(40)
+                }
+            }.start()
         }
-
     }
 
     override fun onClick(v: View?) {
         val btnName = (v as Button).text.toString()
         when (v){
             btnLogClear -> {
-                stringTextLog = ""
+                myList.clear()
+                myBackgroundList.clear()
+                myAdapter.notifyDataSetChanged()
+
                 stringTextHistory = ""
                 stringTextResult = ""
-                textLog.setText(stringTextLog)
                 textHistory.setText(stringTextHistory)
                 textResult.setText(stringTextResult)
                 valorAcumulado = 0
@@ -145,10 +168,45 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
     // ------------- textLog --------------
-    private var stringTextLog: String = ""
     private var mostraNaTelaHandler = Handler()
     private var updateMostraNaTela = Runnable {
-        textLog.setText(stringTextLog)
+        val linesInBackgroudList = myBackgroundList.size
+        val cota=3
+
+        Thread.currentThread().priority = 1
+
+
+        if ( myList.size >= MAX_LOG_LINES) {
+            val linesToBeDeleted : Int = MAX_LOG_LINES/4
+            Timber.i("Deletando $linesToBeDeleted de myList (size atual: ${myList.size})")
+            for (line in 0 until linesToBeDeleted) {
+                myList.removeAt(0)
+            }
+            Timber.i("Novo tamanho de myList (${myList.size})")
+        }
+
+        if ( linesInBackgroudList > cota) {
+            Timber.i("Copiando $linesInBackgroudList de myBackgroundList para myList")
+        }
+
+        // Copy lines from myBackgroundList to myList
+        for (line in 0 until linesInBackgroudList ) {
+            myList.add(myBackgroundList[line])
+        }
+        myAdapter.notifyDataSetChanged()
+
+        // Remove lines from myBackgroundList to myList
+        for (line in 0 until linesInBackgroudList) {
+            myBackgroundList.removeAt(0)
+        }
+
+        if ( linesInBackgroudList > cota) {
+            Timber.i("Removidas $linesInBackgroudList de myBackgroundList")
+            Timber.i("Novo tamanho de myBackgroundList = ${myBackgroundList.size}")
+        }
+
+//        Thread.currentThread().priority = 1
+        my_recycler_view.smoothScrollToPosition(myAdapter.getItemCount() - 1)
     }
 
     fun mostraNaTela(str:String) {
@@ -157,7 +215,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         Timber.i(newString)
 
-        stringTextLog = "  $newString\n$stringTextLog"
+        myBackgroundList.add(newString)
+
+
 
         mostraNaTelaHandler.removeCallbacks(updateMostraNaTela)
         mostraNaTelaHandler.postDelayed(updateMostraNaTela, 10)

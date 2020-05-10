@@ -32,8 +32,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LogActivity" />
-
         <receiver android:name="StartMyActivityAtBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

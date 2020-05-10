@@ -16,8 +16,7 @@ import java.util.*
 enum class DeviceState  {
     UNKNOW,
     OFF,
-    ON,
-    RESET;
+    ON;
 }
 
 enum class DeviceCommand  {
@@ -35,7 +34,7 @@ enum class DeviceCommand  {
 @SuppressLint("StaticFieldLeak")
 object BillAcceptor {
     private const val WAIT_WHEN_OFFLINE = 5000L
-    private const val WAIT_TIME_TO_QUESTION = 10000L
+    private const val WAIT_TIME_TO_QUESTION = 1000L
     private const val WAIT_TIME_TO_RESPONSE = 300L
     private const val BUSY_LIMIT_COUNTER = 10
 
@@ -94,12 +93,21 @@ object BillAcceptor {
     }
 
     fun SendTurnOn() {
-        sendCommandToDevice(DeviceCommand.ON)
-        sendCommandToDevice(DeviceCommand.QUESTION)
+        if ( stateMachineRunning ) {
+            desiredState = DeviceState.ON
+        } else {
+            sendCommandToDevice(DeviceCommand.ON)
+            sendCommandToDevice(DeviceCommand.QUESTION)
+        }
     }
 
     fun SendTurnOff() {
-        sendCommandToDevice(DeviceCommand.OFF)
+        if ( stateMachineRunning ) {
+            desiredState = DeviceState.OFF
+        } else {
+            sendCommandToDevice(DeviceCommand.OFF)
+            sendCommandToDevice(DeviceCommand.QUESTION)
+        }
     }
 
     fun SendQuestion() {
@@ -108,26 +116,6 @@ object BillAcceptor {
 
     fun SendReset() {
         sendCommandToDevice(DeviceCommand.RESET)
-    }
-
-    fun turnOn() {
-        if ( stateMachineRunning ) {
-            desiredState = DeviceState.ON
-            deviceChecking(WAIT_TIME_TO_RESPONSE)
-        } else {
-            sendCommandToDevice(DeviceCommand.ON)
-            sendCommandToDevice(DeviceCommand.QUESTION)
-        }
-    }
-
-    fun turnOff() {
-        if ( stateMachineRunning ) {
-            desiredState = DeviceState.OFF
-            deviceChecking(WAIT_TIME_TO_RESPONSE)
-        } else {
-            sendCommandToDevice(DeviceCommand.OFF)
-            sendCommandToDevice(DeviceCommand.QUESTION)
-        }
     }
 
 
@@ -165,9 +153,6 @@ object BillAcceptor {
             sendCommandToDevice(DeviceCommand.QUESTION)
         } else {
             when (desiredState) {
-                DeviceState.RESET -> {
-                    resetCredits()
-                }
                 DeviceState.ON -> {
                     sendCommandToDevice(DeviceCommand.ON)
                 }
@@ -237,21 +222,20 @@ object BillAcceptor {
                     Event.QUESTION -> {
                         when(response.status) {
                             Event.ON -> {
-                                mainActivity?.runOnUiThread(java.lang.Runnable {
+                                mainActivity?.runOnUiThread {
                                     (mainActivity as MainActivity).btnBillAcceptorColor.setBackgroundResource(R.drawable.green_bill_acceptor)
-                                })
+                                }
                                 receivedState = DeviceState.ON
                             }
                             Event.OFF -> {
-                                mainActivity?.runOnUiThread(java.lang.Runnable {
+                                mainActivity?.runOnUiThread {
                                     (mainActivity as MainActivity).btnBillAcceptorColor.setBackgroundResource(R.drawable.red_bill_acceptor)
-                                })
+                                }
                                 receivedState = DeviceState.OFF
                             }
                         }
                         // Quando receber uma resposta com um valor > 0
-                        // Vamos mandar desligar o noteiro e quando ele estiver desligado e com
-                        // valor > 0 vamos enviar um comando de reset. Quando recebermos a resposta
+                        // vamos enviar um comando de reset. Quando recebermos a resposta
                         // do Reset com o valor ZERADO vamos contabilizar o valor armazenado em
                         // receivedValue
                         if ( response.value > 0 ) {
@@ -261,7 +245,8 @@ object BillAcceptor {
                                 }
                             }
                             receivedValue = response.value
-                            resetCredits()
+                            sendCommandToDevice(DeviceCommand.RESET)
+                            desiredState = DeviceState.OFF
                         }
 
                         // Podemos reagendar o proximo question automatico
@@ -281,6 +266,8 @@ object BillAcceptor {
                         if ( (mainActivity as MainActivity).checkBoxBillAcceptorAutomatic.isChecked) {
                             desiredState = DeviceState.ON
                             sendCommandToDevice(DeviceCommand.ON)
+                        } else {
+                            desiredState = DeviceState.OFF
                         }
 
                     }
@@ -344,29 +331,5 @@ object BillAcceptor {
 
     }
 
-    private fun resetCredits() {
-        if ( desiredState != DeviceState.RESET ) {
-            Timber.i("Vamos iniciar RESET desligando o noteiro.  Enviando OFF. (Modo atual: ${receivedState})")
-            sendCommandToDevice(DeviceCommand.OFF)
-            desiredState = DeviceState.RESET
-        } else {
-            Timber.i("executando procedimento para resetCredits.  Desired:${desiredState}  receivedState:${receivedState}")
-            if ( receivedValue == 0) {
-                Timber.e("Estavamos aguardando zerar receivedValue. Como ZEROU vamos mandar colocar estado target = OFF")
-                desiredState = DeviceState.OFF
-//                sendCommandToDevice(DeviceCommand.OFF)
-                sendCommandToDevice(DeviceCommand.QUESTION)
-            } else {
-                // Só vamos aceitar credito quando recebermos um valor no estado OFF
-                if ( receivedState == DeviceState.OFF) {
-                    Timber.i("Estando no estado OFF, podemos mandar RESET")
-                    sendCommandToDevice(DeviceCommand.RESET)
-                } else {
-                    Timber.e("Ainda não esta no estado OFF, vamos tentar desligar de novo")
-                    sendCommandToDevice(DeviceCommand.OFF)
-                }
-            }
-        }
-    }
 }
 

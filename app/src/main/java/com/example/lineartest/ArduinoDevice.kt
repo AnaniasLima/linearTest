@@ -84,7 +84,18 @@ object ArduinoDevice {
         usbSerialRequestHandler.postDelayed(usbSerialRunnable, delayToNext)
     }
 
+    var lastDif = 0
+
     fun onEventResponse(eventResponse: EventResponse) {
+
+        val dif = eventResponse.packetNumber.toInt() - eventResponse.numPktResp.toInt()
+
+        if ( dif != lastDif) {
+            Timber.e("========= Perdeu pacote ======")
+            lastDif = dif
+            mostraEmHistory("Perdeu ${lastDif} pacotes (${eventResponse.packetNumber})")
+        }
+
         when ( eventResponse.eventType ) {
             EventType.FW_PLAY -> {
                 Timber.e("=============== FW_PLAY =======================: ${eventResponse.toString()}")
@@ -141,7 +152,10 @@ object ArduinoDevice {
                 connectThread = ConnectThread(ConnectThread.CONNECT, usbManager!!, mainActivity!!, myContext!!)
                 if (connectThread != null ) {
                     Timber.i("Startando thread para tratar da conexao")
+                    connectThread!!.priority = Thread.MAX_PRIORITY
+
                     connectThread!!.start()
+
                 } else {
                     Timber.e("Falha na criação da thread ")
                 }
@@ -166,7 +180,7 @@ object ArduinoDevice {
 
 
     fun requestToSend(eventType: EventType, action: String) : Boolean {
-        var ret : Boolean = false
+        var ret = false
 
         if ( ConnectThread.isConnected ) {
             try {

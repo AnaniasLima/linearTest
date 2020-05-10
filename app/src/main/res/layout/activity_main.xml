@@ -118,14 +118,6 @@
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/btn15"
-            android:text="CMD15"
-            android:enabled="false"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
-        <Button
             android:id="@+id/btn16"
             android:text="CMD16"
             android:layout_width="wrap_content"
@@ -145,13 +137,15 @@
         android:weightSum="10"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/textLog"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@color/colorTextLog"
             android:layout_weight="8"
             android:text="" />
+
 
         <LinearLayout
             android:id="@+id/midleAreaRight"

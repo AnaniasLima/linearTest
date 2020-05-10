@@ -14,10 +14,7 @@ import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
 import com.google.gson.Gson
 import timber.log.Timber
-import java.io.DataOutputStream
 import java.io.IOException
-import java.net.InetAddress
-import java.net.Socket
 import java.util.*
 
 
@@ -33,7 +30,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         var CONNECT = 1
         var DISCONNECT = 0
         val DROP_SAME_COMMAND_TIME_INTERVAL : Long = 100L
-        val WAIT_INTER_PACKETS : Long = 20L
+        val WAIT_INTER_PACKETS : Long = 30L
         val WAITTIME : Long = 50L
         var isConnected: Boolean  = false
     }
@@ -62,8 +59,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         return false
     }
 
-
-    // onde chegam as respostas do arduino
+    // onde chegam as respostas do Arduino
     override fun onReceivedData(pkt: ByteArray) {
         val tam:Int = pkt.size
         var ch:Byte
@@ -72,11 +68,8 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
             return
         }
 
-//        Timber.i("pktsize=${pkt.size} ")
-
         for ( i in 0 until tam) {
             ch  =   pkt[i]
-//            Timber.i("  [$i] - %c", ch)
             if ( ch.toInt() == 0 ) break
             if ( ch.toChar() == '{') {
                 if ( pktInd > 0 ) {
@@ -108,6 +101,8 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 
         if ( ArduinoDevice.getLogLevel(FunctionType.FX_RX)   ) {
             mostraNaTela("RX: ${commandReceived}")
+        } else {
+            Timber.d("RX: ${commandReceived}")
         }
 
 //        println("@@@ RX ==> ${commandReceived}")
@@ -125,10 +120,13 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
         } catch (e: Exception) {
             EventResponse.invalidJsonPacketsReceived++
             Timber.e("===============JSON INVALIDO (%d)=======================: ${commandReceived}", EventResponse.invalidJsonPacketsReceived)
+            mostraEmHistory("Recebido JSON INVALIDO")
             return
         }
 
     }
+
+
 
     /**
      * set the thread to finish
@@ -138,6 +136,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
     }
 
     override fun run() {
+//        this.priority(Thread.MAX_PRIORITY)
         if ( operation ==  CONNECT) {
             if ( connectInBackground() ) {
                 finishThread = false
@@ -177,7 +176,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
             lastEventAction = curEvent.action
             lastEventTimestamp = curEvent.timestamp
 
-            var pktStr: String = Event.getCommandData(curEvent)
+            val pktStr: String = Event.getCommandData(curEvent)
             usbSerialDevice?.write(pktStr.toByteArray())
 
             if ( ArduinoDevice.getLogLevel(FunctionType.FX_TX)  ) {
@@ -212,11 +211,11 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
 //
 //            println( "isConnected = ${connection.isConnected}")
 //            sleep(1000)
-//
-//        isConnected = usbSerialDevice?.isOpen ?: false
-//        if ( isConnected ) {
-//            return true
-//        }
+
+        isConnected = usbSerialDevice?.isOpen ?: false
+        if ( isConnected ) {
+            return true
+        }
 
         try {
             val m_device    : UsbDevice? = selectDevice(0)
@@ -234,7 +233,7 @@ class ConnectThread(val operation:Int, val usbManager : UsbManager, val mainActi
                     if ( usbSerialDevice != null ) {
                         Timber.i("Opening usbSerialDevice")
                         if ( usbSerialDevice!!.open()) {
-                            usbSerialDevice!!.setBaudRate(57600)
+                            usbSerialDevice!!.setBaudRate(115200)
                             usbSerialDevice!!.read( this )
                         }
                     } else {

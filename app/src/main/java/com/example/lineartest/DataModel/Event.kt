@@ -13,6 +13,7 @@ data class Event(
     var timestamp: Long = Date().time) {
 
     companion object {
+        val numeraPacotesIndividuais=false
         val ON = "on"
         val OFF = "off"
         val QUESTION = "question"
@@ -31,6 +32,7 @@ data class Event(
         var tabletResetPktNumber: Int = 0
         var ledPktNumber: Int = 0
         var nackPktNumber: Int = 0
+        var tabletCalibratePktNumber: Int = 0
 //        var noteiroOnTimestamp:String = ""
 
 
@@ -38,16 +40,22 @@ data class Event(
         fun getCommandData(event: Event): String {
             val commandData = JSONObject()
 
-            when (event.eventType) {
-                EventType.FW_STATUS_RQ -> pktNumber = ++statusPktNumber
-                EventType.FW_BILL_ACCEPTOR   -> pktNumber = ++billAcceptorPktNumber
-                EventType.FW_DEMO      -> pktNumber = ++demoPktNumber
-                EventType.FW_PLAY      -> pktNumber = ++playPktNumber
-                EventType.FW_PINPAD    -> pktNumber = ++pinpadPktNumber
-                EventType.FW_LED       -> pktNumber = ++ledPktNumber
-                EventType.FW_NACK      -> pktNumber = ++nackPktNumber
-                EventType.FW_TABLET_RESET    -> pktNumber = ++tabletResetPktNumber
+            if ( numeraPacotesIndividuais ) {
+                when (event.eventType) {
+                    EventType.FW_STATUS_RQ     -> pktNumber = ++statusPktNumber
+                    EventType.FW_BILL_ACCEPTOR -> pktNumber = ++billAcceptorPktNumber
+                    EventType.FW_DEMO          -> pktNumber = ++demoPktNumber
+                    EventType.FW_PLAY          -> pktNumber = ++playPktNumber
+                    EventType.FW_PINPAD        -> pktNumber = ++pinpadPktNumber
+                    EventType.FW_LED           -> pktNumber = ++ledPktNumber
+                    EventType.FW_NACK          -> pktNumber = ++nackPktNumber
+                    EventType.FW_TABLET_RESET  -> pktNumber = ++tabletResetPktNumber
+                    EventType.FW_CALIBRATE     -> pktNumber = ++tabletCalibratePktNumber
+                }
+            } else {
+                ++pktNumber
             }
+
 
             commandData.put("cmd", event.eventType.command)
 
@@ -113,6 +121,10 @@ data class EventResponse(
     var tR: String = "",
     var tB: String = "",
     var tG: String = "",
+    var packetNumber: String = "",
+    var numPktResp: String = "",
+
+
 //    var timestamp: String = "",
 //    var noteiroOnTimestamp: String = "",
     var cordinates: String = "",
@@ -134,7 +146,8 @@ enum class EventType(val type: Int, val command: String) {
     FW_DEMO(4, "fw_demo"),
     FW_BILL_ACCEPTOR(5, "fw_noteiro"),
     FW_LED(6, "fw_led"),
-    FW_NACK(7, "fw_nack");
+    FW_NACK(7, "fw_nack"),
+    FW_CALIBRATE(5, "fw_calibrate");
 
     companion object {
         fun getByCommand(command: String): EventType? {
