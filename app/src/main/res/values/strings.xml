@@ -16,6 +16,10 @@
     <string name="clear">CLEAR</string>
     <string name="tag">TAG</string>
 
+    <string name="led_on">Led ON</string>
+    <string name="led_off">Led OFF</string>
+    <string name="led_on_off">Led ON/OFF</string>
+
     <string name="logTx">Log TX</string>
     <string name="logRx">Log RX</string>
     <string name="sendOn">Send\nOn</string>

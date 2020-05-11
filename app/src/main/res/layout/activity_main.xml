@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/topArea1"
@@ -14,65 +14,65 @@
 
         <Button
             android:id="@+id/btnBillAcceptorOn"
-            android:text="@string/billAcceptorOn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/billAcceptorOn" />
 
 
         <Button
             android:id="@+id/btnBillAcceptorQuestion"
-            android:text="@string/billAcceptorQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/billAcceptorQuestion" />
 
         <Button
             android:id="@+id/btnBillAcceptorStartMachine"
-            android:text="@string/startStateMachine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/startStateMachine" />
 
         <Button
             android:id="@+id/btnLogTag"
-            android:text="@string/tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/tag" />
 
 
         <CheckBox
             android:id="@+id/checkBoxBillAcceptorAutomatic"
-            android:text="@string/automaticBillAcceptor"
-            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="@string/automaticBillAcceptor" />
 
 
         <CheckBox
             android:id="@+id/checkBoxLogTX"
-            android:text="@string/logTx"
-            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="@string/logTx" />
 
         <CheckBox
             android:id="@+id/checkBoxLogRX"
-            android:text="@string/logRx"
-            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="@string/logRx" />
     </LinearLayout>
 
 
@@ -85,65 +85,66 @@
 
         <Button
             android:id="@+id/btnBillAcceptorOff"
-            android:text="@string/billAcceptorOff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/billAcceptorOff" />
 
 
         <Button
             android:id="@+id/btnBillAcceptorReset"
-            android:text="@string/billAcceptorReset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/billAcceptorReset" />
 
         <Button
             android:id="@+id/btnBillAcceptorStopMachine"
-            android:text="@string/stopStateMachine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/stopStateMachine" />
 
 
         <Button
             android:id="@+id/btnLogClear"
-            android:text="@string/clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/clear" />
 
-        <Button
-            android:id="@+id/btn16"
-            android:text="CMD16"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/spinnerDelayQuestion"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:gravity="end"
+            android:textAlignment="gravity" />
+
 
     </LinearLayout>
 
 
     <LinearLayout
-        android:id="@+id/midleAreaLeft"
+        android:id="@+id/midleArea"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:layout_height="0dp"
         android:layout_weight="10"
-        android:weightSum="10"
-        android:orientation="horizontal">
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal"
+        android:weightSum="10">
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/colorTextLog"
             android:layout_weight="8"
+            android:background="@color/colorTextLog"
             android:text="" />
 
 
@@ -152,24 +153,22 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
-            android:weightSum="10"
-            android:layout_weight="2"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="10">
 
             <TextView
                 android:id="@+id/textHistory"
-                android:text=""
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/colorTextHistory"
                 android:layout_weight="9"
-                />
+                android:background="@color/colorTextHistory"
+                android:text="" />
 
             <TextView
                 android:id="@+id/textResult"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
                 android:layout_weight="1"
+                android:layout_height="0dp"
                 android:background="@color/colorTextResult"
                 android:fontFamily="sans-serif-black"
                 android:text=""
@@ -180,9 +179,7 @@
         </LinearLayout>
 
 
-
     </LinearLayout>
-
 
 
     <LinearLayout
@@ -190,73 +187,84 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@color/colorPrimaryDark"
-        android:weightSum="10"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="10">
 
         <Button
             android:id="@+id/btnBillAcceptorColor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_gravity="center"
             android:background="@drawable/green_bill_acceptor"
-            android:layout_gravity="center"/>
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/btn5reais"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bill5reais"
+            android:layout_gravity="center"
             android:layout_marginStart="5dp"
-            android:layout_gravity="center"/>
+            android:background="@drawable/bill5reais"
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle" />
+
         <Button
             android:id="@+id/btn10reais"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bill10reais"
+            android:layout_gravity="center"
             android:layout_marginStart="5dp"
-            android:layout_gravity="center"/>
+            android:background="@drawable/bill10reais"
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle" />
+
         <Button
             android:id="@+id/btn20reais"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bill20reais"
+            android:layout_gravity="center"
             android:layout_marginStart="5dp"
-            android:layout_gravity="center"/>
+            android:background="@drawable/bill20reais"
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/btn50reais"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/bill50reais"
+            android:layout_gravity="center"
             android:layout_marginStart="5dp"
-            android:layout_gravity="center"/>
+            android:background="@drawable/bill50reais"
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/btnLedOn"
-            android:text="LedOn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/led_on"
+            tools:ignore="ButtonStyle" />
+
         <Button
             android:id="@+id/btnLedOff"
-            android:text="LedOff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/led_off"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/btnLedOnOff"
-            android:text="LedOn/Off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/led_on_off"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 </LinearLayout>

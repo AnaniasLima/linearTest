@@ -6,12 +6,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lineartest.DataModel.Event
 import com.example.lineartest.DataModel.EventType
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,10 +29,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     var myList = ArrayList<String>()
     var myBackgroundList = ArrayList<String>()
     val myAdapter = LogAdapter(this, myList)
+    var questionDelayList = ArrayList<String>()
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
 
         if (BuildConfig.DEBUG) {
 //            Timber.plant(MyDebugTree())
@@ -35,10 +46,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         setContentView(R.layout.activity_main)
 
-        Timber.i("AAA")
-        Timber.v("BBB")
-        Timber.e("CCC")
-        Timber.d("DDD")
+
+        questionDelayList.add("Question 50 ms")
+        questionDelayList.add("Question 100 ms")
+        questionDelayList.add("Question 500 ms")
+        questionDelayList.add("Question 1000 ms")
+        questionDelayList.add("Question 5000 ms")
+        questionDelayList.add("Question 10000 ms")
+        questionDelayList.add("Question 60000 ms")
+
+        spinnerDelayQuestion.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , questionDelayList)
+        spinnerDelayQuestion.setSelection(3) // 1000 ms
+
+        BillAcceptor.setDelayForQuestion(spinnerDelayQuestion.selectedItem.toString())
+
+        spinnerDelayQuestion.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Timber.i("Nada foi selecionado")
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+                BillAcceptor.setDelayForQuestion(parent!!.getItemAtPosition(pos).toString())
+            }
+        }
+
 
 
 
@@ -88,15 +119,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnLedOff.setOnClickListener(this)
         btnLedOnOff.setOnClickListener(this)
 
-        btn16.setOnClickListener {
-            Thread {
-                for ( contaLinha in  1..500) {
-                    ArduinoDevice.requestToSend(EventType.FW_LED, Event.ON)
-                    ArduinoDevice.requestToSend(EventType.FW_LED, Event.OFF)
-                    Thread.sleep(40)
-                }
-            }.start()
-        }
+//        btn16.setOnClickListener {
+//            Thread {
+//                for ( contaLinha in  1..500) {
+//                    ArduinoDevice.requestToSend(EventType.FW_LED, Event.ON)
+//                    ArduinoDevice.requestToSend(EventType.FW_LED, Event.OFF)
+//                    Thread.sleep(40)
+//                }
+//            }.start()
+//        }
+
+
     }
 
     override fun onClick(v: View?) {
@@ -257,6 +290,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mostraEmHistoryHandler.removeCallbacks(updateEmResult)
         mostraEmHistoryHandler.postDelayed(updateEmResult, 10)
     }
+
 
 
 

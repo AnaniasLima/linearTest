@@ -9,6 +9,7 @@ import com.example.lineartest.DataModel.EventResponse
 import com.example.lineartest.DataModel.EventType
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +35,7 @@ enum class DeviceCommand  {
 @SuppressLint("StaticFieldLeak")
 object BillAcceptor {
     private const val WAIT_WHEN_OFFLINE = 5000L
-    private const val WAIT_TIME_TO_QUESTION = 1000L
+    private var WAIT_TIME_TO_QUESTION = 1000L
     private const val WAIT_TIME_TO_RESPONSE = 300L
     private const val BUSY_LIMIT_COUNTER = 10
 
@@ -66,6 +67,22 @@ object BillAcceptor {
     private fun mostraEmResult(valor : Int) {
         (mainActivity as MainActivity).mostraEmResult(valor)
     }
+
+    fun setDelayForQuestion(token: String) {
+        val indStart = token.indexOfFirst {  it == ' '}
+        val str2 = token.substring(indStart+1)
+        val indEnd = str2.indexOfFirst {  it == ' '}
+        val str3 = str2.substring(0, indEnd)
+
+        try {
+            val delay: Long = str3.toLong()
+            WAIT_TIME_TO_QUESTION = delay
+        } catch (e: Exception) {
+
+        }
+    }
+
+
 
     fun fakeBillAccept(value: Int) {
         when (value) {
@@ -149,7 +166,7 @@ object BillAcceptor {
 
         if ( receivedState == desiredState ) {
             Timber.i("receivedState=%s  desiredState=%s", receivedState, desiredState)
-            deviceChecking(WAIT_TIME_TO_QUESTION ) // Ao receber a resposta de QUESTION vai agendar um novo QUESTION
+            deviceChecking(0 ) // Ao receber a resposta de QUESTION vai agendar um novo QUESTION
             sendCommandToDevice(DeviceCommand.QUESTION)
         } else {
             when (desiredState) {
