@@ -35,7 +35,8 @@ enum class DeviceCommand  {
 @SuppressLint("StaticFieldLeak")
 object BillAcceptor {
     private const val WAIT_WHEN_OFFLINE = 5000L
-    private var WAIT_TIME_TO_QUESTION = 1000L
+    private var DEFAULT_TIME_TO_QUESTION = 1000L
+    private var SELECTED_TIME_TO_QUESTION = DEFAULT_TIME_TO_QUESTION
     private const val WAIT_TIME_TO_RESPONSE = 300L
     private const val BUSY_LIMIT_COUNTER = 10
 
@@ -55,6 +56,17 @@ object BillAcceptor {
     private var turnOnTimeStamp: String = ""
     private var stateMachineRunning = false
 
+    var questionDelayList = ArrayList<String>()
+    init {
+        questionDelayList.add("Default ${DEFAULT_TIME_TO_QUESTION} ms")
+        questionDelayList.add("Question 50 ms")
+        questionDelayList.add("Question 100 ms")
+        questionDelayList.add("Question 500 ms")
+        questionDelayList.add("Question 1000 ms")
+        questionDelayList.add("Question 5000 ms")
+        questionDelayList.add("Question 10000 ms")
+        questionDelayList.add("Question 60000 ms")
+    }
 
     private fun mostraNaTela(str:String) {
         (mainActivity as MainActivity).mostraNaTela(str)
@@ -76,9 +88,10 @@ object BillAcceptor {
 
         try {
             val delay: Long = str3.toLong()
-            WAIT_TIME_TO_QUESTION = delay
+            SELECTED_TIME_TO_QUESTION = delay
+            deviceChecking(0L) // Para iniciar novo ciclo
         } catch (e: Exception) {
-
+            SELECTED_TIME_TO_QUESTION = DEFAULT_TIME_TO_QUESTION
         }
     }
 
@@ -146,7 +159,7 @@ object BillAcceptor {
                 delayToNext = WAIT_WHEN_OFFLINE
             } else {
                 if ( delayToNext == 0L ) {
-                    delayToNext = WAIT_TIME_TO_QUESTION
+                    delayToNext = SELECTED_TIME_TO_QUESTION
                     dropLog = true
                 }
             }
