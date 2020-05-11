@@ -28,7 +28,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     var myList = ArrayList<String>()
     var myBackgroundList = ArrayList<String>()
-    val myAdapter = LogAdapter(this, myList)
+
+    var historyList = ArrayList<String>()
+    var historyBackgroundList = ArrayList<String>()
+
+    val logAdapter = LogAdapter(this, myList)
+    val historyAdapter = HistoryAdapter(this, historyList)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,8 +89,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
 
-        my_recycler_view.layoutManager = LinearLayoutManager(this)
-        my_recycler_view.adapter = myAdapter
+        log_recycler_view.layoutManager = LinearLayoutManager(this)
+        log_recycler_view.adapter = logAdapter
+
+        history_recycler_view.layoutManager = LinearLayoutManager(this)
+        history_recycler_view.adapter = historyAdapter
+
 
         btnBillAcceptorOn.setOnClickListener(this)
         btnBillAcceptorOff.setOnClickListener(this)
@@ -127,11 +136,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             btnLogClear -> {
                 myList.clear()
                 myBackgroundList.clear()
-                myAdapter.notifyDataSetChanged()
+                logAdapter.notifyDataSetChanged()
 
-                stringTextHistory = ""
-                stringTextResult = ""
-                textHistory.setText(stringTextHistory)
+
+                historyList.clear()
+                historyBackgroundList.clear()
+                historyAdapter.notifyDataSetChanged()
+
+
                 textResult.setText(stringTextResult)
                 valorAcumulado = 0
             }
@@ -215,7 +227,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         for (line in 0 until linesInBackgroudList ) {
             myList.add(myBackgroundList[line])
         }
-        myAdapter.notifyDataSetChanged()
+        logAdapter.notifyDataSetChanged()
 
         // Remove lines from myBackgroundList to myList
         for (line in 0 until linesInBackgroudList) {
@@ -228,7 +240,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
 //        Thread.currentThread().priority = 1
-        my_recycler_view.smoothScrollToPosition(myAdapter.getItemCount() - 1)
+        log_recycler_view.smoothScrollToPosition(logAdapter.getItemCount() - 1)
     }
 
     fun mostraNaTela(str:String) {
@@ -239,26 +251,60 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         myBackgroundList.add(newString)
 
-
-
         mostraNaTelaHandler.removeCallbacks(updateMostraNaTela)
         mostraNaTelaHandler.postDelayed(updateMostraNaTela, 10)
     }
 
 
     // ------------- textHistory --------------
-    private var stringTextHistory: String = ""
     private var mostraEmHistoryHandler = Handler()
+
     private var updateEmHistory = Runnable {
-        textHistory.setText(stringTextHistory)
+        val linesInBackgroudList = historyBackgroundList.size
+        val cota=3
+
+        Thread.currentThread().priority = 1
+
+        if ( historyList.size >= MAX_LOG_LINES) {
+            val linesToBeDeleted : Int = MAX_LOG_LINES/4
+            Timber.i("Deletando $linesToBeDeleted de historyList (size atual: ${historyList.size})")
+            for (line in 0 until linesToBeDeleted) {
+                historyList.removeAt(0)
+            }
+            Timber.i("Novo tamanho de historyList (${historyList.size})")
+        }
+
+        if ( linesInBackgroudList > cota) {
+            Timber.i("Copiando $linesInBackgroudList de historyBackgroundList para historyList")
+        }
+
+        // Copy lines from historyBackgroundList to historyList
+        for (line in 0 until linesInBackgroudList ) {
+            historyList.add(historyBackgroundList[line])
+        }
+        historyAdapter.notifyDataSetChanged()
+
+        // Remove lines from historyBackgroundList to historyList
+        for (line in 0 until linesInBackgroudList) {
+            historyBackgroundList.removeAt(0)
+        }
+
+        if ( linesInBackgroudList > cota) {
+            Timber.i("Removidas $linesInBackgroudList de historyBackgroundList")
+            Timber.i("Novo tamanho de historyBackgroundList = ${historyBackgroundList.size}")
+        }
+
+//        Thread.currentThread().priority = 1
+        history_recycler_view.smoothScrollToPosition(historyAdapter.getItemCount() - 1)
     }
+
     fun mostraEmHistory(str:String) {
         val strHora1 = SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().time)
         val newString = "$strHora1 - $str"
 
         Timber.i(newString)
 
-        stringTextHistory = "  $newString\n$stringTextHistory"
+        historyBackgroundList.add(newString)
 
         mostraEmHistoryHandler.removeCallbacks(updateEmHistory)
         mostraEmHistoryHandler.postDelayed(updateEmHistory, 10)

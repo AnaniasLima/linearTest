@@ -134,13 +134,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:background="@color/colorPrimary"
+        android:background="@color/black"
         android:orientation="horizontal"
         android:weightSum="10">
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/my_recycler_view"
+            android:id="@+id/log_recycler_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="8"
@@ -154,10 +154,12 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimary"
             android:orientation="vertical"
+            android:layout_weight="2"
             android:weightSum="10">
 
-            <TextView
-                android:id="@+id/textHistory"
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/history_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="9"
@@ -171,7 +173,7 @@
                 android:layout_height="0dp"
                 android:background="@color/colorTextResult"
                 android:fontFamily="sans-serif-black"
-                android:text=""
+                android:text="XXX"
                 android:textAlignment="textEnd"
                 android:textSize="30sp"
                 android:textStyle="bold|italic" />

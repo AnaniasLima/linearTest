@@ -8,4 +8,5 @@
     <color name="colorTextResult">#A79B34</color>
     <color name="colorTopArea1">#809C1B</color>
     <color name="colorTopArea2">#809C1B</color>
+    <color name="black">#EE000000</color>
 </resources>
